@@ -1,3 +1,3 @@
-all: dummies.c
-	gcc -c -w -o dummies.o dummies.c
-	ar r libjos.a dummies.o
+all: trampline.c
+	gcc -c -w -o trampline.o trampline.c
+	ar r libjostrampline.a trampline.o

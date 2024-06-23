@@ -1,2 +1,2 @@
-/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a
--L../../obj/lib/ -ljos
+-L../../libjos/ -ljostrampline
+-L../../../obj/lib/ -ljos
