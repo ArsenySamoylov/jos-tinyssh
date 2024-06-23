@@ -1,2 +1,2 @@
--lutil
--lsocket -lnsl
+/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a
+-L/home/arsenyfucker/Desktop/dop_curses/jos-tinyssh/libjos -ljos

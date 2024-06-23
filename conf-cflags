@@ -1,3 +1,14 @@
+-nostdlib
+-ffreestanding
+-mno-sse 
+-mno-sse2 
+-mno-mmx
+-fno-builtin
+-fno-omit-frame-pointer 
+-mno-red-zone
+-fno-stack-protector
+-DJOS_USER
+-w
 -pedantic
 -Wall
 -Wno-long-long
@@ -12,9 +23,9 @@
 -Wunused-value
 -Wunused-parameter
 -Wundef
--fstack-protector-strong
+#-fstack-protector-strong
 -fwrapv
 -fno-strict-overflow
 -Os
--fomit-frame-pointer
+#-fomit-frame-pointer
 -funroll-loops
