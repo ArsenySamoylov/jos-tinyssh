@@ -7,7 +7,6 @@
 -fno-omit-frame-pointer 
 -mno-red-zone
 -fno-stack-protector
--T ../../../bin/bin.ld
 -DJOS_USER
 -w
 -pedantic
