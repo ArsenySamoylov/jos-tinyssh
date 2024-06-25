@@ -266,6 +266,7 @@ cp -pr _tinyssh/* "${work}" 2>/dev/null || :
   cat TARGETS \
   | while read x
   do
+    ${compiler} -fno-pic ../../../obj/lib/entry.o -T../../../bin/bin.ld -I"${include}" -o "${x}" "${x}.o" libtinyssh.a ${libs} || { log2 "${x} failed ... see the log ${log}"; exit 111; }
     log2 "${x} ok"
   done || exit 111
   log1 "finishing"
