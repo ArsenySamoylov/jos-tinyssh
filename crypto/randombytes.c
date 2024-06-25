@@ -3,6 +3,7 @@
 #include <inc/stat.h>
 #include <inc/fcntl.h>
 #include <inc/unistd.h>
+#include <inc/assert.h>
 #include "randombytes.h"
 
 /* it's really stupid that there isn't a syscall for this */
@@ -12,6 +13,7 @@ static int fd = -1;
 void randombytes(unsigned char *x,unsigned long long xlen)
 {
   int i;
+  panic("TODO:\n");
 
   if (fd == -1) {
     for (;;) {
