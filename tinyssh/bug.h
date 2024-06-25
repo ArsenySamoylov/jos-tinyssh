@@ -1,7 +1,7 @@
 #ifndef _BUG_H____
 #define _BUG_H____
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "global.h"
 #include "e.h"
 #include "log.h"

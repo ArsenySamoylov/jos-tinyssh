@@ -4,9 +4,9 @@ Jan Mojzis
 Public domain.
 */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <inc/types.h>
+#include <inc/stat.h>
+#include <inc/unistd.h>
 #include "savesync.h"
 #include "log.h"
 #include "sshcrypto.h"

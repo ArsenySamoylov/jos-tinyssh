@@ -4,7 +4,7 @@ Jan Mojzis
 Public domain.
 */
 
-#include <pwd.h>
+#include <inc/pwd.h>
 #include "buf.h"
 #include "ssh.h"
 #include "e.h"

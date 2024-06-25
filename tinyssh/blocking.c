@@ -1,5 +1,5 @@
 /* taken from nacl-20110221, from curvecp/blocking.c */
-#include <fcntl.h>
+#include <inc/fcntl.h>
 #include "blocking.h"
 
 void blocking_enable(int fd)

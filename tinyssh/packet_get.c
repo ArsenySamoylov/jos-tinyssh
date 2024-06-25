@@ -4,8 +4,8 @@ Jan Mojzis
 Public domain.
 */
 
-#include <poll.h>
-#include <unistd.h>
+#include <inc/poll.h>
+#include <inc/unistd.h>
 #include "byte.h"
 #include "e.h"
 #include "bug.h"

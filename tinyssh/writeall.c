@@ -1,6 +1,6 @@
 /* taken from nacl-20110221, from curvecp/writeall.c */
-#include <poll.h>
-#include <unistd.h>
+#include <inc/poll.h>
+#include <inc/unistd.h>
 #include "e.h"
 #include "writeall.h"
 

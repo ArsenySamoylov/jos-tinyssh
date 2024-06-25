@@ -1,8 +1,8 @@
 /* taken from nacl-20110221, from curvecp/open_cwd.c curvecp/open_pipe.c curvecp/open_read.c  curvecp/open_write.c */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include <inc/types.h>
+#include <inc/stat.h>
+#include <inc/unistd.h>
+#include <inc/fcntl.h>
 #include "blocking.h"
 #include "open.h"
 

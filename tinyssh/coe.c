@@ -4,7 +4,7 @@ Jan Mojzis
 Public domain.
 */
 
-#include <fcntl.h>
+#include <inc/fcntl.h>
 #include "coe.h"
 
 /*

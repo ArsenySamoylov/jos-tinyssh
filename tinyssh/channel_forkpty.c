@@ -4,15 +4,15 @@ Jan Mojzis
 Public domain.
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #if defined(sun) || defined(__hpux)
-#include <sys/stropts.h>
+#include <inc/stropts.h>
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <sys/ioctl.h> 
+#include <inc/types.h>
+#include <inc/stat.h>
+#include <inc/fcntl.h>
+#include <inc/termios.h>
+#include <inc/ioctl.h> 
 extern char *ptsname(int);
 extern int grantpt(int);
 extern int unlockpt(int);

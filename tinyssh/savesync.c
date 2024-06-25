@@ -1,8 +1,8 @@
 /* taken from nacl-20110221, from curvecp/savesync.c */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <inc/types.h>
+#include <inc/stat.h>
+#include <inc/fcntl.h>
+#include <inc/unistd.h>
 #include "open.h"
 #include "savesync.h"
 #include "writeall.h"

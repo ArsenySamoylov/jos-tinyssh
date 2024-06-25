@@ -4,11 +4,11 @@ Jan Mojzis
 Public domain.
 */
 
-#include <sys/types.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
+#include <inc/types.h>
+#include <inc/param.h>
+#include <inc/socket.h>
+#include <inc/netinet/in.h>
+#include <inc/unistd.h>
 #include "e.h"
 #include "byte.h"
 #include "iptostr.h"

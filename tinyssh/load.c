@@ -1,5 +1,5 @@
 /* taken from nacl-20110221, from curvecp/load.c */
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "readall.h"
 #include "open.h"
 #include "e.h"

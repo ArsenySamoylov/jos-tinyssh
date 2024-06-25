@@ -4,9 +4,9 @@ Jan Mojzis
 Public domain.
 */
 
-#include <sys/stat.h>
-#include <unistd.h>
-#include <pwd.h>
+#include <inc/stat.h>
+#include <inc/unistd.h>
+#include <inc/pwd.h>
 #include "dropuidgid.h"
 #include "newenv.h"
 #include "channel.h"

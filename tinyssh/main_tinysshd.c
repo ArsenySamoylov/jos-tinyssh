@@ -3,12 +3,11 @@
 Jan Mojzis
 Public domain.
 */
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <signal.h>
-#include <poll.h>
+#include <inc/types.h>
+#include <inc/stat.h>
+#include <inc/unistd.h>
+#include <inc/signal.h>
+#include <inc/poll.h>
 #include "blocking.h"
 #include "ssh.h"
 #include "purge.h"

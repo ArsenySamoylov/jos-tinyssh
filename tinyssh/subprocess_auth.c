@@ -4,11 +4,11 @@ Jan Mojzis
 Public domain.
 */
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <pwd.h>
+#include <inc/types.h>
+#include <inc/wait.h>
+#include <inc/stat.h>
+#include <inc/unistd.h>
+#include <inc/pwd.h>
 #include "str.h"
 #include "open.h"
 #include "dropuidgid.h"

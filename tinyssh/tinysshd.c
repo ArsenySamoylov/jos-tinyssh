@@ -8,7 +8,7 @@ Public domain.
 Multi-call binary wrapper
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "str.h"
 #include "main.h"
 

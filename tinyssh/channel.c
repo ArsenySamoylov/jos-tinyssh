@@ -6,12 +6,12 @@ Public domain.
 The 'channel' library is used to handle data from/to SSH channel (rfc4254).
 */
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <signal.h>
-#include <termios.h>
-#include <sys/ioctl.h>
+#include <inc/types.h>
+#include <inc/wait.h>
+#include <inc/unistd.h>
+#include <inc/signal.h>
+#include <inc/termios.h>
+#include <inc/ioctl.h>
 #include <paths.h>
 extern char *ptsname(int);
 #include "byte.h"

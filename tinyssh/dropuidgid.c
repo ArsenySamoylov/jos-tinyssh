@@ -4,8 +4,8 @@ Jan Mojzis
 Public domain.
 */
 
-#include <sys/types.h>
-#include <unistd.h>
+#include <inc/types.h>
+#include <inc/unistd.h>
 #include <grp.h>
 #include "e.h"
 #include "dropuidgid.h"

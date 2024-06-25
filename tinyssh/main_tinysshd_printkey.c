@@ -4,7 +4,7 @@ Jan Mojzis
 Public domain.
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "e.h"
 #include "load.h"
 #include "sshcrypto.h"

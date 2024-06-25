@@ -4,7 +4,7 @@ Jan Mojzis
 Public domain.
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "blocking.h"
 #include "open.h"
 #include "channel.h"

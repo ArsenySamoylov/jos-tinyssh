@@ -4,9 +4,9 @@ Jan Mojzis
 Public domain.
 */
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include <inc/types.h>
+#include <inc/wait.h>
+#include <inc/unistd.h>
 #include "load.h"
 #include "log.h"
 #include "open.h"

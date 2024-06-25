@@ -9,7 +9,7 @@ The 'global' library also has space
 for 2 versatile buffers.
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "newenv.h"
 #include "channel.h"
 #include "packet.h"
