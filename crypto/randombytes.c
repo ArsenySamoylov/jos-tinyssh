@@ -1,8 +1,8 @@
 /* taken from nacl-20110221, from randombytes/devurandom.c, added close-on-exec */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <inc/types.h>
+#include <inc/stat.h>
+#include <inc/fcntl.h>
+#include <inc/unistd.h>
 #include "randombytes.h"
 
 /* it's really stupid that there isn't a syscall for this */

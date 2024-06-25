@@ -7,7 +7,7 @@ Modifications (Jan Mojzis):
 
 /* See https://ntruprime.cr.yp.to/software.html for detailed documentation. */
 
-#include <string.h>
+#include <inc/string.h>
 #include "crypto_uint64.h"
 #include "crypto_uint32.h"
 #include "crypto_uint16.h"
