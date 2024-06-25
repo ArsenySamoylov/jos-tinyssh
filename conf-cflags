@@ -7,6 +7,16 @@
 -fno-omit-frame-pointer 
 -mno-red-zone
 -fno-stack-protector
+-g 
+-gpubnames 
+-gdwarf-4
+-Wl,-z=noexecstack
+-Wl,--warn-common 
+-Wl,-m=elf_x86_64 
+-Wl,-z=max-page-size=0x1000 
+-Wl,--print-gc-sections
+-Wl,-nostdlib
+-I../../../
 -DJOS_USER
 -w
 -pedantic
