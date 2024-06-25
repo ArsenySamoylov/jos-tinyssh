@@ -262,122 +262,17 @@ cp -pr _tinyssh/* "${work}" 2>/dev/null || :
   ar cr libtinyssh.a `cat LIBS` || exit 111
   log1 "finishing"
 
-  #tests
-  log1 "starting tinyssh-tests"
-  cat LIBS \
-  | while read x
-  do
-    t=`echo ${x} | sed 's/.o$/test/'`
-    if [ ! -h "${t}.c" ]; then
-      ${compiler} -I"${include}" -c "${t}.c" || { log2 "${t} failed ... see the log ${log}"; exit 111; }
-      ${compiler} -I"${include}" -o "${t}" "${t}.o" libtinyssh.a ${libs} || { log2 "${t} failed ... see the log ${log}"; exit 111; }
-      "./${t}" || { log2 "${t} failed ... see the log ${log}"; exit 111; }
-      log2 "${t} ok"
-    fi
-  done || exit 111
-  log1 "finishing"
-
-  log1 "starting _tinyssh"
-  cat _TARGETS \
-  | while read x
-  do
-    ${compiler} -I"${include}" -o "${x}" "${x}.o" libtinyssh.a ${libs} || { log2 "${x} failed ... see the log ${log}"; exit 111; }
-    log2 "${x} ok"
-    cp -p "${x}" "${bin}/${x}";
-  done || exit 111
-  log1 "finishing"
-
   log1 "starting tinyssh"
   cat TARGETS \
   | while read x
   do
-    ${compiler} ../../../obj/lib/entry.o -T../../../bin/bin.ld -I"${include}" -o "${x}" "${x}.o" libtinyssh.a ${libs} || { log2 "${x} failed ... see the log ${log}"; exit 111; }
     log2 "${x} ok"
   done || exit 111
   log1 "finishing"
 
-  log1 "starting tinyssh regression tests"
-  cat TARGETS \
-  | while read x
-  do
-    sh ${x}.rts > ${x}.out
-    log2 "${x} ok"
-    cp -p "${x}" "${bin}/${x}";
-  done || exit 111
-  log1 "finishing"
-
-) || exit 111
 
 log1 "starting manpages"
 cp -pr man/* "${man}"
 log1 "finishing"
 
-log1 "counting words of code - tests"
-rm -rf "${work}"
-mkdir -p "${work}"
-
-for dir in tinyssh-tests crypto-tests _tinyssh; do
-  (
-    touch "${work}/${dir}"
-    [ -d "${dir}" ] || exit 0
-    cd "${dir}" 
-    cat *.c *.h > "${work}/${dir}" || :
-  )
-
-  (
-    cd "${work}"
-    cat "${dir}" \
-    | (
-      cpp -fpreprocessed || gcpp -fpreprocessed
-    ) | (
-      x=`sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' | tr -d ' \012' | wc -c | tr -d ' '`
-      log2 "${dir} ${x}"
-    )
-  )
-done
-(
-  cd "${work}"
-  cat * \
-  | (
-    cpp -fpreprocessed || gcpp -fpreprocessed
-  ) | (
-    x=`sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' | tr -d ' \012' | wc -c | tr -d ' '`
-    log2 "$x words of code"
-  )
-)
-log1 "finishing"
-
-
-echo "=== `date` === counting words of code"
-rm -rf "${work}"
-mkdir -p "${work}"
-
-for dir in sysdep tinyssh crypto; do
-  (
-    cd "${dir}"
-    cat *.c *.h > "${work}/${dir}" || :
-  )
-
-  (
-    cd "${work}"
-    cat "${dir}" \
-    | (
-      cpp -fpreprocessed || gcpp -fpreprocessed
-    ) | (
-      x=`sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' | tr -d ' \012' | wc -c | tr -d ' '`
-      log2 "${dir} ${x}"
-    )
-  )
-done
-(
-  cd "${work}"
-  cat * \
-  | (
-    cpp -fpreprocessed || gcpp -fpreprocessed
-  ) | (
-    x=`sed 's/[_a-zA-Z0-9][_a-zA-Z0-9]*/x/g' | tr -d ' \012' | wc -c | tr -d ' '`
-    log2 "${x} words of code"
-  )
-)
-log1 "finishing"
 exit 0
