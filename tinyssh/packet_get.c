@@ -115,7 +115,7 @@ int packet_get(struct buf *b, crypto_uint8 x) {
 
 int packet_getall(struct buf *b, crypto_uint8 ch) {
 
-    struct pollfd x;
+    // struct pollfd x;
     long long before;
 
     buf_purge(b);
@@ -125,9 +125,9 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
         if (!packet_get(b, ch)) return 0;
         if (b->len > 0) break;
         if (before != packet.recvbuf.len) continue;
-        x.fd = 0;
-        x.events = POLLIN | POLLERR;
-        poll(&x, 1, -1);
+        // x.fd = 0;
+        // x.events = POLLIN | POLLERR;
+        // poll(&x, 1, -1);
         if (!packet_recv()) return 0;
     }
     return 1;

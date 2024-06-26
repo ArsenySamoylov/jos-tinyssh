@@ -10,9 +10,10 @@ Public domain.
 #include "packetparser.h"
 #include "bug.h"
 #include "packet.h"
+#include <inc/stdio.h>
 
 int packet_kex_send(void) {
-
+    printf("in packet kex send\n");
     struct buf *b = &packet.kexsend;
 
     /* send server kex_init */

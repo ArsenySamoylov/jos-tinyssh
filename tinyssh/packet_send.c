@@ -4,12 +4,15 @@ Jan Mojzis
 Public domain.
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
+#include "inc/socket.h"
 #include "writeall.h"
 #include "e.h"
 #include "byte.h"
 #include "purge.h"
 #include "packet.h"
+
+#include <inc/stdio.h>
 
 int packet_sendisready(void) {
 
@@ -37,9 +40,9 @@ int packet_send(void) {
 }
 
 int packet_sendall(void) {
-
-    if (writeall(1, packet.sendbuf.buf, packet.sendbuf.len) == -1) return 0;
+    devsocket_send(packet.sendbuf.buf, packet.sendbuf.len);
     purge(packet.sendbuf.buf, packet.sendbuf.len);
     packet.sendbuf.len = 0;
+    printf("send all packets\n");
     return 1;
 }

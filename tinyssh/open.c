@@ -3,6 +3,7 @@
 #include <inc/stat.h>
 #include <inc/unistd.h>
 #include <inc/fcntl.h>
+#include <inc/stdio.h>
 #include "blocking.h"
 #include "open.h"
 
@@ -27,9 +28,10 @@ int open_read(const char *fn)
 #ifdef O_CLOEXEC
   return open(fn,O_RDONLY | O_NONBLOCK | O_CLOEXEC);
 #else
-  int fd = open(fn,O_RDONLY | O_NONBLOCK);
+  printf("try open %s", fn);
+  int fd = open(fn, O_RDONLY);
   if (fd == -1) return -1;
-  fcntl(fd,F_SETFD,1);
+  // fcntl(fd,F_SETFD,1);
   return fd;
 #endif
 }

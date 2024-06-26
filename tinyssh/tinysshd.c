@@ -9,6 +9,7 @@ Multi-call binary wrapper
 */
 
 #include <inc/unistd.h>
+#include <inc/stdio.h>
 #include "str.h"
 #include "main.h"
 
@@ -27,7 +28,7 @@ static char *x;
 static long long xlen;
 
 int main(int argc, char **argv) {
-
+    printf("in main function\n");
     if (argc < 1) _exit(100);
     if (!argv[0]) _exit(100);
 
@@ -45,6 +46,7 @@ int main(int argc, char **argv) {
         return main_tinysshd(argc, argv, "tinysshnoneauthd");
     }
     else {
+        printf("start deamon\n");
         return main_tinysshd(argc, argv, "tinysshd");
     }
 

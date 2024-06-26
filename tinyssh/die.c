@@ -1,4 +1,5 @@
 #include "global.h"
+#include "inc/stdio.h"
 #include "log.h"
 #include "die.h"
 
@@ -10,12 +11,13 @@ void die_usage(const char *x) {
 
 void die_fatal_(const char *fn, unsigned long long line, const char *trouble, const char *d, const char *f) {
 
+    cprintf("\n%s:%lld %s\n", fn, line, trouble);
     if (d) {
-        if (f) log_9_(1, 0, fn, line, trouble, " ", d, "/", f, 0, 0, 0, 0);
-        else log_9_(1, 0, fn, line, trouble, " ", d, 0, 0, 0, 0, 0, 0);
-    }
-    else {
-        log_9_(1, 0, fn, line, trouble, 0, 0, 0, 0, 0, 0, 0, 0);
+        if (f) {
+            cprintf("in %s:%s\n", d, f);
+        } else {
+            cprintf("int %s\n", d);
+        }
     }
     global_die(111);
 }

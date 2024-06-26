@@ -8,9 +8,14 @@
 /* it's really stupid that there isn't a syscall for this */
 
 static int fd = -1;
-
+// TODO:
 void randombytes(unsigned char *x,unsigned long long xlen)
 {
+  for (size_t i = 0; i < xlen; ++i) {
+    x[i] = 1;
+  }
+  return;
+  
   int i;
 
   if (fd == -1) {

@@ -5,6 +5,8 @@ Public domain.
 */
 
 #include <inc/unistd.h>
+#include <inc/socket.h>
+
 #include "e.h"
 #include "buf.h"
 #include "purge.h"
@@ -26,7 +28,7 @@ int packet_recv(void) {
     }
     if (!packet_recvisready()) return 1;
 
-    r = read(0, b->buf + b->len, PACKET_FULLLIMIT);
+    r = devsocket_recv(b->buf + b->len, PACKET_FULLLIMIT);
     if (r == 0) { errno = ECONNRESET; return 0; }
     if (r == -1) {
         if (errno == EINTR) return 1;

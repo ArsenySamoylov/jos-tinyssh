@@ -70,7 +70,8 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGALRM, timeout);
 
-    log_init(0, binaryname, 0, 0);
+    printf("set signals\n");
+    // log_init(0, binaryname, 0, 0);
     if (str_equaln(binaryname, binarynamelen, "tinysshnoneauthd")) {
         usage = "usage: tinysshnoneauthd [options] keydir";
     }
@@ -112,30 +113,32 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     }
     keydir = *++argv; if (!keydir) die_usage(usage);
 
-    log_init(flagverbose, binaryname, 1, flaglogger);
+    // log_init(flagverbose, binaryname, 1, flaglogger);
 
     if (str_equaln(binaryname, binarynamelen, "tinysshnoneauthd")) {
         if (!customcmd) die_fatal("rejecting to run without -e customprogram", 0, 0);
         if (geteuid() == 0) die_fatal("rejecting to run under UID=0", 0, 0);
         flagnoneauth = 1;
     }
+    printf("get connection info\n"); 
+    // TODO:
+    // connectioninfo(channel.localip, channel.localport, channel.remoteip, channel.remoteport);
+    // log_i4("connection from ", channel.remoteip, ":", channel.remoteport);
 
-    connectioninfo(channel.localip, channel.localport, channel.remoteip, channel.remoteport);
-    log_i4("connection from ", channel.remoteip, ":", channel.remoteport);
-
-    channel_subsystem_log();
+    // channel_subsystem_log();
 
     global_init();
 
-    blocking_disable(0);
-    blocking_disable(1);
-    blocking_disable(2);
-    printf("blocking disable\n");
+    // blocking_disable(0);
+    // blocking_disable(1);
+    // blocking_disable(2);
+    printf("blocking disable by default\n");
 
     /* get server longterm keys */
-    fdwd = open_cwd();
-    if (fdwd == -1) die_fatal("unable to open current directory", 0, 0);
-    if (chdir(keydir) == -1) die_fatal("unable to chdir to", keydir, 0);
+    // TODO: add keydir in jos
+    // fdwd = open_cwd();
+    // if (fdwd == -1) die_fatal("unable to open current directory", 0, 0);
+    // if (chdir(keydir) == -1) die_fatal("unable to chdir to", keydir, 0);
 
     for (i = 0; sshcrypto_keys[i].name; ++i) sshcrypto_keys[i].sign_flagserver |= sshcrypto_keys[i].cryptotype & cryptotypeselected;
     for (i = 0; sshcrypto_keys[i].name; ++i) sshcrypto_keys[i].sign_flagclient |= sshcrypto_keys[i].cryptotype & cryptotypeselected;
@@ -152,21 +155,23 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
         }
     }
 
-    if (fchdir(fdwd) == -1) die_fatal("unable to change directory to working directory", 0, 0);
-    close(fdwd);
+    // if (fchdir(fdwd) == -1) die_fatal("unable to change directory to working directory", 0, 0);
+    // close(fdwd);
 
     /* set timeout */
     alarm(60);
-
-    printf("send and recieve hello\n");
 
     /* send and receive hello */
     if (!packet_hello_send()) die_fatal("unable to send hello-string", 0, 0);
     if (!packet_hello_receive()) die_fatal("unable to receive hello-string", 0, 0);
 
+    printf("\nsuccess send and recieve hello\n");
+
     /* send and receive kex */
     if (!packet_kex_send()) die_fatal("unable to send kex-message", 0, 0);
     if (!packet_kex_receive()) die_fatal("unable to receive kex-message", 0, 0);
+
+    printf("\nsuccess send and recieve kex\n");
 
 rekeying:
     /* rekeying */
