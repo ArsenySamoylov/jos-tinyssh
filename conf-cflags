@@ -17,7 +17,6 @@
 -Wl,--print-gc-sections
 -Wl,-nostdlib
 -I../../../
--I../../pre-compilied/include
 -DJOS_USER
 -w
 -pedantic
