@@ -6,7 +6,7 @@ Public domain.
 The 'newenv' library is used to execute process in completely new environment.
 */
 
-#include <unistd.h>
+#include <inc/unistd.h>
 #include "e.h"
 #include "byte.h"
 #include "str.h"
