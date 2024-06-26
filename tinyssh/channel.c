@@ -12,7 +12,7 @@ The 'channel' library is used to handle data from/to SSH channel (rfc4254).
 #include <inc/signal.h>
 #include <inc/termios.h>
 #include <inc/ioctl.h>
-#include <paths.h>
+#include <inc/paths.h>
 extern char *ptsname(int);
 #include "byte.h"
 #include "bug.h"

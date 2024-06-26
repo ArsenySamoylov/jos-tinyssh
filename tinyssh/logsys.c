@@ -19,11 +19,10 @@ Linux Debian 7.0
 SunOS 5.11
 */
 
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <paths.h>
-#include <arpa/inet.h>
+#include <inc/unistd.h>
+#include <inc/time.h>
+#include <inc/paths.h>
+#include <inc/arpa/inet.h>
 
 #include "hasutilh.h"
 #ifdef HASUTILH
@@ -32,7 +31,7 @@ SunOS 5.11
 
 #include "hasutmpx.h"
 #ifdef HASUTMPX
-#include <utmpx.h>
+#include <inc/utmpx.h>
 #endif
 #include "hasutmpxupdwtmpx.h"
 #include "hasutmpxsyslen.h"

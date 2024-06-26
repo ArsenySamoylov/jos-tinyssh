@@ -1,7 +1,7 @@
 #ifndef E_H
 #define E_H
 
-#include <errno.h>
+#include <inc/errno.h>
 
 extern const char *e_str(int);
 

@@ -6,7 +6,7 @@ Public domain.
 
 #include "hasmlock.h"
 #ifdef HASMLOCK
-#include <sys/mman.h>
+#include <inc/mman.h>
 #endif
 #include "trymlock.h"
 

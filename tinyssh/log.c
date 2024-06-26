@@ -10,7 +10,7 @@ Non-printable characters are replaced using '?'.
 The 'log' library also supports syslog.
 */
 
-#include <syslog.h>
+#include <inc/syslog.h>
 #include "writeall.h"
 #include "randommod.h"
 #include "purge.h"
