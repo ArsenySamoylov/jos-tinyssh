@@ -1,5 +1,6 @@
 /* Public domain. */
-#include <util.h>
+#include <inc/util.h>
+// fuck util
 
 int main(void) {
     return 0;
