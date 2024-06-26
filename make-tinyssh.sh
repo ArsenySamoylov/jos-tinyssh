@@ -269,8 +269,8 @@ cp -pr _tinyssh/* "${work}" 2>/dev/null || :
 (
   cd "${work}"
   log1 "starting tinyssh objects"
-  touch SOURCES TARGETS _TARGETS
-  cat SOURCES TARGETS _TARGETS\
+  touch SOURCES TARGETS
+  cat SOURCES TARGETS \
   | while read x
   do
     ${compiler} "-DCOMPILER=\"${compilerorig}\"" "-DVERSION=\"${version}\"" -I"${include}" -c "${x}.c" || { log2 "${x}.o failed ... see the log ${log}"; exit 111; }
