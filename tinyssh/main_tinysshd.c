@@ -4,6 +4,7 @@ Jan Mojzis
 Public domain.
 */
 #include <inc/types.h>
+#include <inc/stdio.h>
 #include <inc/stat.h>
 #include <inc/unistd.h>
 #include <inc/signal.h>
@@ -129,6 +130,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     blocking_disable(0);
     blocking_disable(1);
     blocking_disable(2);
+    printf("blocking disable\n");
 
     /* get server longterm keys */
     fdwd = open_cwd();
@@ -155,6 +157,8 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
 
     /* set timeout */
     alarm(60);
+
+    printf("send and recieve hello\n");
 
     /* send and receive hello */
     if (!packet_hello_send()) die_fatal("unable to send hello-string", 0, 0);
