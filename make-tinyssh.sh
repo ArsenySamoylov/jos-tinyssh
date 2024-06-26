@@ -131,134 +131,27 @@ libsorig=${libs}
 libs="${libs} `cat ${work}/syslibs`"
 log1 "finishing"
 
-if [ $# -eq 0 ]; then
-  precompiled="${top}/pre-compilied/"
+precompiled="${top}/pre-compilied/"
+compiler="${compiler} -I${precompiled}/include"
 
-  origlibs="${precompiled}/libtinysshcrypto.a ${origlibs}"
-  libs="${precompiled}/libtinysshcrypto.a ${libs}"
-  compiler="${compiler} -I${precompiled}/include"
-  # echo "${compiler}"
-else
-  precompiled="${top}/$1"
+log1 "starting crypto lib"
+rm -rf "${work}"
+mkdir -p "${work}"
+cp -pr crypto/* "${work}"
+(
+  cd "${work}"
+  cat CRYPTOSOURCES\
+  | while read x
+  do
+    ${compiler} -I"${include}" -c "${x}.c" || { log2 "libtinysshcrypto.a failed ... see the log ${log}"; exit 111; }
+  done || exit 111
+  ar cr "${lib}/libtinysshcrypto.a" `cat CRYPTOLIBS` || exit 0
+)
+log2 "libtinysshcrypto.a ok"
+log1 "finishing"
 
-  log1 "building sysdep headers"
-  rm -rf "${work}"
-  mkdir -p "${work}"
-  cp -pr sysdep/* "${work}"
-  (
-    cd "${work}"
-    sh list | (
-      while read target source
-      do
-        [ -f "${include}/${target}" ] && continue
-        rm -f "${source}" "${target}.tmp" 
-        ${compiler} -O0 -o "${source}" "${source}.c" ${libs} || continue
-        "./${source}" > "${target}.tmp" 2>/dev/null || continue
-        if [ -f "${source}.out" ]; then
-          cp "${source}.out" "${include}/${target}"
-        else
-          #runtime
-          cp "${target}.tmp" "${include}/${target}"
-        fi
-        log2 "${target} ${source}"
-      done
-    )
-  )
-  log1 "finishing"
-
-  log1 "starting crypto lib"
-  rm -rf "${work}"
-  mkdir -p "${work}"
-  cp -pr crypto/* "${work}"
-  (
-    cd "${work}"
-    cat CRYPTOSOURCES\
-    | while read x
-    do
-      ${compiler} -I"${include}" -c "${x}.c" || { log2 "libtinysshcrypto.a failed ... see the log ${log}"; exit 111; }
-    done || exit 111
-    ar cr "${lib}/libtinysshcrypto.a" `cat CRYPTOLIBS` || exit 0
-  )
-  log2 "libtinysshcrypto.a ok"
-  log1 "finishing"
-
-  origlibs="${lib}/libtinysshcrypto.a ${origlibs}"
-  libs="${lib}/libtinysshcrypto.a ${libs}"
-
-  log1 "starting crypto headers"
-  rm -rf "${work}"
-  mkdir -p "${work}"
-  cp -p crypto/CRYPTOPRIMITIVES "${work}"
-  cp -pr crypto-tests/*test.c "${work}"
-  cp -pr crypto-tests/*.h "${work}"
-  cp -pr crypto-tests/*.data "${work}" 2>/dev/null || :
-  (
-    cd "${work}"
-    cat CRYPTOPRIMITIVES\
-    | while read primitive checkflag
-    do
-      if [ "x${checkflag}" = x0 ]; then
-        cp -p "${top}/crypto/${primitive}.h" "${include}"
-        continue;
-      fi
-      testf=`echo "${primitive}" | sed 's/$/test/'`
-      (
-        echo '#include <stdio.h>'
-        echo "#include <${primitive}.h>"
-        echo 'int main(void) {'
-        echo "#ifdef ${primitive}_PRIMITIVE"
-        echo "printf(\"%s\\\\n\", ${primitive}_PRIMITIVE);"
-        echo '#else'
-        echo "#ifdef ${primitive}_IMPLEMENTATION"
-        echo "printf(\"%s\\\\n\", ${primitive}_IMPLEMENTATION);"
-        echo '#endif'
-        echo "#ifdef ${primitive}_implementation"
-        echo "printf(\"%s\\\\n\", ${primitive}_implementation);"
-        echo '#endif'
-        echo '#endif'
-        echo 'return 0; }'
-      ) > try.c
-      #try ext. crypto library
-      log0 "trying: ext. ${primitive}:"
-      if ${compiler} -c "${testf}.c" ${libs}; then
-        if ${compiler} -o "${testf}" "${testf}.o" ${libs}; then
-          if ${compiler} -o try try.c; then
-            if /bin/sh -ec "./${testf}"; then
-              log2 "${primitive}.h (`./try`) ok"
-              echo "#include <${primitive}.h>" >> crypto.h
-              continue
-            else
-              log2 "${primitive}.h (`./try`) failed"
-            fi
-          fi
-        fi
-      fi
-      #try int. crypto library
-      log0 "trying: int. ${primitive}:"
-      if cp -p "${top}/crypto/${primitive}.h" . ; then
-        if ${compilerorig} -I. -I"$include" -o "${testf}" "${testf}.c" ${origlibs}; then
-          if ${compilerorig} -I. -I"$include" -o try try.c; then
-            if /bin/sh -ec "./${testf}"; then
-              log2 "${primitive}.h (`./try`) ok"
-              echo "#include \"${primitive}.h\"" >> crypto.h
-              cp -p "${primitive}.h" "${include}"
-              continue
-            fi
-          fi
-        fi
-      fi
-      log2 "${primitive}.h failed ... see the log ${log}"
-      exit 111
-    done || exit 111
-    cp crypto.h "${include}/crypto.h"
-  )
-  log1 "finishing"
-
-  echo mkdir -p "${precompiled}"
-  mkdir -p "${precompiled}"
-  cp -pr "${include}" "${precompiled}/include"
-  cp -pr "${lib}/libtinysshcrypto.a" "${precompiled}/"
-fi
+origlibs="${lib}/libtinysshcrypto.a ${origlibs}"
+libs="${lib}/libtinysshcrypto.a ${libs}"
 
 rm -rf "${work}"
 mkdir -p "${work}"
