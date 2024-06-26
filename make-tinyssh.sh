@@ -135,7 +135,7 @@ if [ $# -eq 0 ]; then
   precompiled="${top}/pre-compilied/"
 
   origlibs="${precompiled}/libtinysshcrypto.a ${origlibs}"
-  libs="${liprecompiledb}/libtinysshcrypto.a ${libs}"
+  libs="${precompiled}/libtinysshcrypto.a ${libs}"
   compiler="${compiler} -I${precompiled}/include"
   # echo "${compiler}"
 else
