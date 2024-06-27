@@ -71,7 +71,6 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     signal(SIGALRM, timeout);
 
     printf("set signals\n");
-    // log_init(0, binaryname, 0, 0);
     if (str_equaln(binaryname, binarynamelen, "tinysshnoneauthd")) {
         usage = "usage: tinysshnoneauthd [options] keydir";
     }
@@ -113,8 +112,6 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     }
     keydir = *++argv; if (!keydir) die_usage(usage);
 
-    // log_init(flagverbose, binaryname, 1, flaglogger);
-
     if (str_equaln(binaryname, binarynamelen, "tinysshnoneauthd")) {
         if (!customcmd) die_fatal("rejecting to run without -e customprogram", 0, 0);
         if (geteuid() == 0) die_fatal("rejecting to run under UID=0", 0, 0);
@@ -123,9 +120,6 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     printf("get connection info\n"); 
     // TODO:
     // connectioninfo(channel.localip, channel.localport, channel.remoteip, channel.remoteport);
-    // log_i4("connection from ", channel.remoteip, ":", channel.remoteport);
-
-    // channel_subsystem_log();
 
     global_init();
 
@@ -135,10 +129,6 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     printf("blocking disable by default\n");
 
     /* get server longterm keys */
-    // TODO: add keydir in jos
-    // fdwd = open_cwd();
-    // if (fdwd == -1) die_fatal("unable to open current directory", 0, 0);
-    // if (chdir(keydir) == -1) die_fatal("unable to chdir to", keydir, 0);
 
     for (i = 0; sshcrypto_keys[i].name; ++i) sshcrypto_keys[i].sign_flagserver |= sshcrypto_keys[i].cryptotype & cryptotypeselected;
     for (i = 0; sshcrypto_keys[i].name; ++i) sshcrypto_keys[i].sign_flagclient |= sshcrypto_keys[i].cryptotype & cryptotypeselected;
@@ -155,8 +145,6 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
         }
     }
 
-    // if (fchdir(fdwd) == -1) die_fatal("unable to change directory to working directory", 0, 0);
-    // close(fdwd);
 
     /* set timeout */
     alarm(60);
@@ -184,7 +172,8 @@ rekeying:
 
     /* send and receive kexdh */
     if (!packet_kexdh(keydir, &b1, &b2)) die_fatal("unable to process kexdh", 0, 0);
-
+    printf("send and recieve kexdh\n");
+    
     if (packet.flagkeys) log_d1("rekeying: done");
     packet.flagkeys = 1;
 

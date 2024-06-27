@@ -45,6 +45,7 @@ int packet_kex_receive(void) {
     crypto_uint32 len;
 
     if (!packet_getall(b, SSH_MSG_KEXINIT)) return 0;
+    cprintf("start parsing kex\n");
 
     /* parse packet */
     pos = packetparser_uint8(b->buf, b->len, pos, &ch);       /* SSH_MSG_KEXINIT */

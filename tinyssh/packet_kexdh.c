@@ -17,6 +17,7 @@ Public domain.
 #include "subprocess.h"
 #include "packet.h"
 
+#include <inc/stdio.h>
 
 int packet_kexdh(const char *keydir, struct buf *b1, struct buf *b2) {
 
@@ -47,6 +48,7 @@ int packet_kexdh(const char *keydir, struct buf *b1, struct buf *b2) {
     buf_purge(b1);
 
     /* generate key and compute shared secret */
+    printf("generate key and compute shared secret\n");
     do { 
         /* XXX - workaroud for bug in OpenSSH 6.5 - 6.6 */
         if (sshcrypto_enc(serverpk, sharedsecret, clientpk) != 0) bug_proto();
@@ -69,6 +71,7 @@ int packet_kexdh(const char *keydir, struct buf *b1, struct buf *b2) {
     packet.flagrekeying = 1;
 
     /* signature */
+    printf("subprocess sign\n");
     if (subprocess_sign(sm, sshcrypto_sign_bytes, keydir, hash, sshcrypto_hash_bytes) != 0) return 0;
     buf_purge(b1); buf_purge(b2);
 

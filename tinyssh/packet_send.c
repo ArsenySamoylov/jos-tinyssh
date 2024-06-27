@@ -40,9 +40,12 @@ int packet_send(void) {
 }
 
 int packet_sendall(void) {
-    devsocket_send(packet.sendbuf.buf, packet.sendbuf.len);
+    int res = devsocket_send(packet.sendbuf.buf, packet.sendbuf.len);
+    if (res != packet.sendbuf.len) {
+        printf("error while send packet with len %d\n", res);
+    }
+    printf("send all packets with len %lld\n", packet.sendbuf.len);
     purge(packet.sendbuf.buf, packet.sendbuf.len);
     packet.sendbuf.len = 0;
-    printf("send all packets\n");
     return 1;
 }

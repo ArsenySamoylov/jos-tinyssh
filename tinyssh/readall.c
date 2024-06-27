@@ -1,5 +1,6 @@
 /* taken from nacl-20110221, from curvecp/load.c */
 #include <inc/unistd.h>
+#include <inc/lib.h>
 #include "e.h"
 #include "readall.h"
 
@@ -19,6 +20,7 @@ int readall(int fd, void *xv, long long xlen) {
         }
         x += r;
         xlen -= r;
+        sys_yield();
     }
     return 0;
 }

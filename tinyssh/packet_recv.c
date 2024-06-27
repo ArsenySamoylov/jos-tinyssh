@@ -6,6 +6,7 @@ Public domain.
 
 #include <inc/unistd.h>
 #include <inc/socket.h>
+#include <inc/stdio.h>
 
 #include "e.h"
 #include "buf.h"

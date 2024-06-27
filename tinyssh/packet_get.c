@@ -6,6 +6,8 @@ Public domain.
 
 #include <inc/poll.h>
 #include <inc/unistd.h>
+#include <inc/lib.h>
+
 #include "byte.h"
 #include "e.h"
 #include "bug.h"
@@ -32,6 +34,7 @@ static int packet_get_plain_(struct buf *b) {
 
     /* parse length */
     packet_length = uint32_unpack_big(pp);
+    printf("packet length %d\n", packet_length);
     if (packet_length > PACKET_LIMIT) {
         char buf1[NUMTOSTR_LEN];
         char buf2[NUMTOSTR_LEN];
@@ -128,7 +131,10 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
         // x.fd = 0;
         // x.events = POLLIN | POLLERR;
         // poll(&x, 1, -1);
-        if (!packet_recv()) return 0;
+        while (packet_recv() == 0) {
+            sys_yield();
+        }
     }
+    printf("succes get all packets\n");
     return 1;
 }
