@@ -235,7 +235,8 @@ rekeying:
             if (!channel_write()) die_fatal("unable to write data to child", 0, 0);
 
             /* try to adjust window */
-            if (!packet_channel_send_windowadjust(&b1)) die_fatal("unable to send data to network", 0, 0);
+            // TODO:
+            // if (!packet_channel_send_windowadjust(&b1)) die_fatal("unable to send data to network", 0, 0);
         }
 
         /* read data from child */
@@ -257,7 +258,6 @@ rekeying:
         /* receive data from network */
         if (watch0) {
             alarm(3600); /* refresh timeout */
-            printf("try recieve\n");
             if (!packet_recv()) {
                 if (channel_iseof()) break; /* XXX */
                 die_fatal("unable to receive data from network", 0, 0);
@@ -285,7 +285,7 @@ rekeying:
                     packet_send();
                     break;
                 case SSH_MSG_CHANNEL_DATA:
-                    printf("SSH_MSG_CHANNEL_DATA\n");
+                    // printf("SSH_MSG_CHANNEL_DATA\n");
                     if (!packet_channel_recv_data(&b1)) die_fatal("unable to handle channel-data", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_EXTENDED_DATA:

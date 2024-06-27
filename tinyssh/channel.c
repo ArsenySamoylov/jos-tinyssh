@@ -156,8 +156,17 @@ Process is executed under appropriate users UID.
 */
 int channel_exec(const char *cmd) {
 
-    printf("request: exec: try exec %s\n", cmd);
-    return 1;
+    // TODO:
+    if (!cmd) {
+        printf("requrst: exec: spawn shell\n");
+        channel.fd0 = 1;
+        channel.fd1 = 0;
+        channel.pid = sys_getenvid();
+        return 1;
+    } else {
+        panic("Unimplemented\n");
+    }
+    
     char *run[4];
     char *shell;
     char *name;
@@ -222,6 +231,7 @@ void channel_put(unsigned char *buf, long long len) {
     byte_copy(channel.buf0 + channel.len0, len, buf);
     channel.len0 += len;
     channel.localwindow -= len;
+    printf("%s", buf);
 }
 
 /*
