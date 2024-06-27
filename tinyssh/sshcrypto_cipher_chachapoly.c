@@ -77,8 +77,6 @@ int chachapoly_packet_get(struct buf *b) {
     unsigned char n[8];
 
     /* we need at least 4 bytes */
-    // FIXME:
-    printf("recvbuf->len - PACKET_ZEROBYTES : %lld\n", recvbuf->len - PACKET_ZEROBYTES);
     if (recvbuf->len - PACKET_ZEROBYTES < 4) { packet.packet_length = 0; return 1; }
 
     /* parse length */

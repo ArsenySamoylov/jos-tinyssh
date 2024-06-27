@@ -41,6 +41,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         boolean   want reply
         string    command
 */
+        printf("request: exec\n");
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -66,6 +67,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         boolean   want reply
         string    subsystem name
 */
+        printf("request: subsystem\n");
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -97,6 +99,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         string    "shell"
         boolean   want reply
 */
+        printf("request: shell\n");
 
         pos = packetparser_end(b1->buf, b1->len, pos);
 
@@ -120,7 +123,8 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         string    variable name
         string    variable value
 */
-        /**/
+        printf("request: env\n");
+
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);     /* string    variable name */
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -155,6 +159,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         uint32    terminal height, pixels (e.g., 480)
         string    encoded terminal modes
 */
+        printf("request: pty-req\n");
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -190,6 +195,8 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
       uint32    terminal width, pixels
       uint32    terminal height, pixels
 */
+        printf("request: window-change\n");
+
         pos = packetparser_uint32(b1->buf, b1->len, pos, &a);
         pos = packetparser_uint32(b1->buf, b1->len, pos, &b);
         pos = packetparser_uint32(b1->buf, b1->len, pos, &x);

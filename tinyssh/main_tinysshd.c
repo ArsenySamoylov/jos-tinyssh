@@ -9,6 +9,8 @@ Public domain.
 #include <inc/unistd.h>
 #include <inc/signal.h>
 #include <inc/poll.h>
+#include <inc/socket.h>
+
 #include "blocking.h"
 #include "ssh.h"
 #include "purge.h"
@@ -27,6 +29,7 @@ Public domain.
 #include "die.h"
 #include "str.h"
 #include "main.h"
+#include "env.h"
 
 static unsigned int cryptotypeselected = sshcrypto_TYPENEWCRYPTO | sshcrypto_TYPEPQCRYPTO;
 static int flagverbose = 1;
@@ -50,7 +53,10 @@ static void trigger(int x) {
     x = write(selfpipe[1], "", 1);
 }
 
+char *environ_array[] = {"PATH=/;/bin", NULL}; 
+
 int main_tinysshd(int argc, char **argv, const char *binaryname) {
+    environ = environ_array;
 
     char *x;
     const char *keydir = 0;
@@ -153,8 +159,6 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     if (!packet_hello_send()) die_fatal("unable to send hello-string", 0, 0);
     if (!packet_hello_receive()) die_fatal("unable to receive hello-string", 0, 0);
 
-    printf("\nsuccess send and recieve hello\n");
-
     /* send and receive kex */
     if (!packet_kex_send()) die_fatal("unable to send kex-message", 0, 0);
     if (!packet_kex_receive()) die_fatal("unable to receive kex-message", 0, 0);
@@ -172,7 +176,6 @@ rekeying:
 
     /* send and receive kexdh */
     if (!packet_kexdh(keydir, &b1, &b2)) die_fatal("unable to process kexdh", 0, 0);
-    printf("send and recieve kexdh\n");
     
     if (packet.flagkeys) log_d1("rekeying: done");
     packet.flagkeys = 1;
@@ -212,7 +215,8 @@ rekeying:
 
         if (selfpipe[0] != -1) { watchselfpipe = q; q->fd = selfpipe[0]; q->events = POLLIN; ++q; }
 
-        if (poll(p, q - p, 60000) < 0) {
+        // FIXME:
+        if (devsocket_poll() < 0) {
             watch0 = watch1 = 0;
             watchtochild = watchfromchild1 = watchfromchild2 = 0;
             watchselfpipe = 0;
@@ -225,6 +229,8 @@ rekeying:
             if (watchtochild) if (!watchtochild->revents) watchtochild = 0;
             if (watchselfpipe) if (!watchselfpipe->revents) watchselfpipe = 0;
         }
+        // FIXME:
+        watch0 = (void *)1;
 
         if (watchtochild) {
 
@@ -272,24 +278,31 @@ rekeying:
 
             switch (b1.buf[0]) {
                 case SSH_MSG_CHANNEL_OPEN:
+                    printf("SSH_MSG_CHANNEL_OPEN\n");
                     if (!packet_channel_open(&b1, &b2)) die_fatal("unable to open channel", 0, 0);
+                    packet_send();
                     break;
                 case SSH_MSG_CHANNEL_REQUEST:
+                    printf("SSH_MSG_CHANNEL_REQUEST\n");
                     if (!packet_channel_request(&b1, &b2, customcmd)) die_fatal("unable to handle channel-request", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_DATA:
+                    printf("SSH_MSG_CHANNEL_DATA\n");
                     if (!packet_channel_recv_data(&b1)) die_fatal("unable to handle channel-data", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_EXTENDED_DATA:
+                    printf("SSH_MSG_CHANNEL_EXTENDED_DATA\n");
                     if (!packet_channel_recv_extendeddata(&b1)) die_fatal("unable to handle channel-extended-data", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_WINDOW_ADJUST:
                     if (!packet_channel_recv_windowadjust(&b1)) die_fatal("unable to handle channel-window-adjust", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_EOF:
+                    printf("SSH_MSG_CHANNEL_EOF\n");
                     if (!packet_channel_recv_eof(&b1)) die_fatal("unable to handle channel-eof", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_CLOSE:
+                    printf("SSH_MSG_CHANNEL_CLOSE\n");
                     if (!packet_channel_recv_close(&b1)) die_fatal("unable to handle channel-close", 0, 0);
                     break;
                 case SSH_MSG_KEXINIT:

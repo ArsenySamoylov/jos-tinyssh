@@ -26,7 +26,7 @@ int packet_send(void) {
     long long w;
 
     if (sendbuf->len <= 0) return 1;
-    w = write(1, sendbuf->buf, sendbuf->len);
+    w = devsocket_send(sendbuf->buf, sendbuf->len);
     if (w == -1) {
         if (errno == EINTR) return 1;
         if (errno == EAGAIN) return 1;

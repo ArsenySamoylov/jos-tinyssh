@@ -13,7 +13,6 @@ Public domain.
 #include <inc/stdio.h>
 
 int packet_kex_send(void) {
-    printf("in packet kex send\n");
     struct buf *b = &packet.kexsend;
 
     /* send server kex_init */
@@ -45,7 +44,6 @@ int packet_kex_receive(void) {
     crypto_uint32 len;
 
     if (!packet_getall(b, SSH_MSG_KEXINIT)) return 0;
-    cprintf("start parsing kex\n");
 
     /* parse packet */
     pos = packetparser_uint8(b->buf, b->len, pos, &ch);       /* SSH_MSG_KEXINIT */
