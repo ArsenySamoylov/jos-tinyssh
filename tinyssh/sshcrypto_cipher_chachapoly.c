@@ -88,10 +88,6 @@ int chachapoly_packet_get(struct buf *b) {
         sshcrypto_stream_xor(buf, recvbuf->buf + PACKET_ZEROBYTES, 4, n, packet.clientkey + 32);
         packet.packet_length = uint32_unpack_big(buf);
     }
-    // FIXME:
-    printf("packet length %u\n", packet.packet_length);
-    // FIXME:
-    if (packet.packet_length > PACKET_LIMIT) { return 1; }
 
     if (packet.packet_length > PACKET_LIMIT) bug_proto();
     if (packet.packet_length + AB + 4 > recvbuf->len - PACKET_ZEROBYTES) return 1;

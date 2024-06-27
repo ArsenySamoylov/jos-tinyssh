@@ -35,7 +35,7 @@ long long channel_fork(int fd[3]) {
         for (i = 0; i < 3; ++i) {
             close(pa[i]); close(i);
             blocking_enable(ch[i]);
-            if (dup(ch[i]) != i) _exit(111);
+            // if (dup(ch[i]) != i) _exit(111); // TODO FIXME
         }
         return 0;
     }

@@ -38,7 +38,7 @@ static int findnameandkey(const char *keyname, const char *key, char *x) {
 
 static void check(uid_t uid, const char *d, const char *f, long long *err) {
 
-    struct stat st;
+    struct Stat st;
     int e = 0;
 
     if (f) {
