@@ -181,12 +181,14 @@ rekeying:
 
     /* authentication + authorization */
     if (packet.flagauthorized == 0) {
+        printf("try user  authentication and authorization\n");
         if (!packet_auth(&b1, &b2, flagnoneauth)) die_fatal("authentication failed", 0, 0);
         packet.flagauthorized = 1;
     }
 
     /* note: user is authenticated and authorized */
     alarm(3600);
+    printf("user is authenticated and authorized\n");
 
     /* main loop */
     for (;;) {

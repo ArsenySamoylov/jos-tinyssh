@@ -81,6 +81,7 @@ int packet_kexdh(const char *keydir, struct buf *b1, struct buf *b2) {
     buf_putstringlen(b2, serverpk, sshcrypto_kem_ciphertextbytes);  /* servers's public key */
     sshcrypto_buf_putsignature(b2, sm);                             /* signature */
     packet_put(b2);
+    if (!packet_sendall()) return 0;
 
     /* send server newkeys */
     buf_purge(b2);

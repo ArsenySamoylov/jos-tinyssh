@@ -117,7 +117,6 @@ int packet_get(struct buf *b, crypto_uint8 x) {
 }
 
 int packet_getall(struct buf *b, crypto_uint8 ch) {
-
     // struct pollfd x;
     long long before;
 
@@ -125,7 +124,10 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
 
     for (;;) {
         before = packet.recvbuf.len;
-        if (!packet_get(b, ch)) return 0;
+        if (!packet_get(b, ch)) {
+            printf("cannot get packet\n");
+            return 0;
+        }
         if (b->len > 0) break;
         if (before != packet.recvbuf.len) continue;
         // x.fd = 0;
@@ -135,6 +137,6 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
             sys_yield();
         }
     }
-    printf("succes get all packets\n");
+    printf("succes get all packets with type: %02d\n", ch);
     return 1;
 }

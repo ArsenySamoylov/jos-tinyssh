@@ -15,6 +15,8 @@ Public domain.
 #include "bug.h"
 #include "packet.h"
 
+#include <inc/stdio.h>
+
 #define BB sshcrypto_cipher_blockbytes
 #define AB sshcrypto_auth_bytes
 #define ZB 60
@@ -75,6 +77,8 @@ int chachapoly_packet_get(struct buf *b) {
     unsigned char n[8];
 
     /* we need at least 4 bytes */
+    // FIXME:
+    printf("recvbuf->len - PACKET_ZEROBYTES : %lld\n", recvbuf->len - PACKET_ZEROBYTES);
     if (recvbuf->len - PACKET_ZEROBYTES < 4) { packet.packet_length = 0; return 1; }
 
     /* parse length */
@@ -84,6 +88,10 @@ int chachapoly_packet_get(struct buf *b) {
         sshcrypto_stream_xor(buf, recvbuf->buf + PACKET_ZEROBYTES, 4, n, packet.clientkey + 32);
         packet.packet_length = uint32_unpack_big(buf);
     }
+    // FIXME:
+    printf("packet length %u\n", packet.packet_length);
+    // FIXME:
+    if (packet.packet_length > PACKET_LIMIT) { return 1; }
 
     if (packet.packet_length > PACKET_LIMIT) bug_proto();
     if (packet.packet_length + AB + 4 > recvbuf->len - PACKET_ZEROBYTES) return 1;

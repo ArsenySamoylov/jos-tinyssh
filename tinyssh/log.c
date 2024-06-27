@@ -63,7 +63,7 @@ static void flush(void) {
         syslog(LOG_INFO, "%s", buf);
     }
     else {
-        writeall(2, buf, buflen);
+        writeall(1, buf, buflen);
     }
     buflen = 0;
     purge(buf, buflen);
