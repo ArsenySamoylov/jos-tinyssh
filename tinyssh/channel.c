@@ -156,6 +156,8 @@ Process is executed under appropriate users UID.
 */
 int channel_exec(const char *cmd) {
 
+    printf("request: exec: try exec %s\n", cmd);
+    return 1;
     char *run[4];
     char *shell;
     char *name;

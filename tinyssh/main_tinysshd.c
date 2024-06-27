@@ -261,6 +261,7 @@ rekeying:
         /* receive data from network */
         if (watch0) {
             alarm(3600); /* refresh timeout */
+            printf("try recieve\n");
             if (!packet_recv()) {
                 if (channel_iseof()) break; /* XXX */
                 die_fatal("unable to receive data from network", 0, 0);
@@ -285,6 +286,7 @@ rekeying:
                 case SSH_MSG_CHANNEL_REQUEST:
                     printf("SSH_MSG_CHANNEL_REQUEST\n");
                     if (!packet_channel_request(&b1, &b2, customcmd)) die_fatal("unable to handle channel-request", 0, 0);
+                    packet_send();
                     break;
                 case SSH_MSG_CHANNEL_DATA:
                     printf("SSH_MSG_CHANNEL_DATA\n");

@@ -137,6 +137,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         p2[plen2] = 0;
 
         if (channel_env(p1, p2)) {
+            printf("request: env: %s=%s, %d\n", p1, p2, wantreply);
             log_d5("packet=SSH_MSG_CHANNEL_REQUEST, env ", p1, "=", p2, ", accepted");
             goto accept;
         }
@@ -175,11 +176,11 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         /* XXX TODO encoded terminal modes (p2, plen2) */
         p1[plen1] = 0;
         p2[plen2] = 0;
-        if (!channel_openterminal(p1, a, b, x, y)) {
-            log_w1("unable to open terminal");
-            log_d3("packet=SSH_MSG_CHANNEL_REQUEST, pty-req ", p1, ", rejected");
-            goto reject;
-        }
+        // if (!channel_openterminal(p1, a, b, x, y)) {
+        //     log_w1("unable to open terminal");
+        //     log_d3("packet=SSH_MSG_CHANNEL_REQUEST, pty-req ", p1, ", rejected");
+        //     goto reject;
+        // }
         log_d3("packet=SSH_MSG_CHANNEL_REQUEST, pty-req ", p1, ", accepted");
         goto accept;
     }
