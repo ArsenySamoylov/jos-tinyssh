@@ -66,8 +66,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     struct pollfd *watch0;
     struct pollfd *watch1;
     struct pollfd *watchtochild;
-    struct pollfd *watchfromchild1;
-    struct pollfd *watchfromchild2;
+    struct pollfd *watchfromchild;
     struct pollfd *watchselfpipe;
     int exitsignal, exitcode;
     long long binarynamelen = str_len(binaryname);
@@ -201,7 +200,7 @@ rekeying:
                     break;
 
         watch0 = watch1 = 0;
-        watchtochild = watchfromchild1 = watchfromchild2 = 0;
+        watchtochild = watchfromchild = 0;
         watchselfpipe = 0;
 
         q = p;
@@ -210,22 +209,20 @@ rekeying:
         if (packet_recvisready()) { watch0 = q; q->fd = 0; q->events = POLLIN;  ++q; }
 
         if (channel_writeisready()) { watchtochild = q; q->fd = channel_getfd0(); q->events = POLLOUT; ++q; }
-        if (channel_readisready() && packet_putisready()) { watchfromchild1 = q; q->fd = channel_getfd1(); q->events = POLLIN; ++q; }
-        if (channel_extendedreadisready() && packet_putisready()) { watchfromchild2 = q; q->fd = channel_getfd2(); q->events = POLLIN; ++q; }
+        if (channel_readisready() && packet_putisready()) { watchfromchild = q; q->fd = channel_getfd1(); q->events = POLLIN; ++q; }
 
         if (selfpipe[0] != -1) { watchselfpipe = q; q->fd = selfpipe[0]; q->events = POLLIN; ++q; }
 
         // FIXME:
         if (devsocket_poll() < 0) {
             watch0 = watch1 = 0;
-            watchtochild = watchfromchild1 = watchfromchild2 = 0;
+            watchtochild = watchfromchild = 0;
             watchselfpipe = 0;
         }
         else {
             if (watch0) if (!watch0->revents) watch0 = 0;
             if (watch1) if (!watch1->revents) watch1 = 0;
-            if (watchfromchild1) if (!watchfromchild1->revents) watchfromchild1 = 0;
-            if (watchfromchild2) if (!watchfromchild2->revents) watchfromchild2 = 0;
+            if (watchfromchild) if (!watchfromchild->revents) watchfromchild = 0;
             if (watchtochild) if (!watchtochild->revents) watchtochild = 0;
             if (watchselfpipe) if (!watchselfpipe->revents) watchselfpipe = 0;
         }
@@ -242,8 +239,7 @@ rekeying:
         }
 
         /* read data from child */
-        if (watchfromchild1) packet_channel_send_data(&b2);
-        if (watchfromchild2) packet_channel_send_extendeddata(&b2);
+        if (watchfromchild) packet_channel_send_data(&b2);
 
         /* check child */
         if (channel_iseof()) {
