@@ -28,6 +28,7 @@ void packet_channel_send_data(struct buf *b) {
     if (b->alloc <= PACKET_LIMIT) bug_nomem();
     if (!packet_putisready()) return;
     r = channel_read(b->buf + 9, limit - 9);
+    cprintf("read: <%s>\n", b->buf + 9);
     if (r == 0) return;
     b->len = r + 9;
     b->buf[0] = SSH_MSG_CHANNEL_DATA;                   /* byte      SSH_MSG_CHANNEL_DATA */

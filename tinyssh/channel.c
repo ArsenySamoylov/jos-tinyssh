@@ -159,9 +159,27 @@ int channel_exec(const char *cmd) {
     // TODO:
     if (!cmd) {
         printf("requrst: exec: spawn shell\n");
-        channel.fd0 = 1;
-        channel.fd1 = 0;
-        channel.pid = sys_getenvid();
+        int fromchild[2];
+        int tochild[2];
+        int res = 0;
+        if ((res = pipe(fromchild)) < 0) {
+            printf("cannot create fromchild pipe %i\n", res);
+        }
+        if ((res = pipe(tochild)) < 0) {
+            printf("cannot create tochild pipe %i\n", res);
+        }
+        cprintf("fromchild[0] %d\n", fromchild[0]);
+        assert(fromchild[0] == 2);
+        assert(fromchild[1] == 3);
+        assert(tochild[0] == 4);
+        assert(tochild[1] == 5);
+        // FIXME:
+        channel.pid = spawnl("/bin/sh", "/bin/sh", "-p", "4", "3", (char *)0);
+        if (channel.pid < 0) {
+            cprintf("spawnl error %i\n", channel.pid);
+        }
+        channel.fd0 = tochild[1];
+        channel.fd1 = fromchild[0];
         return 1;
     } else {
         panic("Unimplemented\n");
@@ -220,6 +238,7 @@ The 'channel_put' function adds data from
 client to childs buffer.
 */
 void channel_put(unsigned char *buf, long long len) {
+    printf("try put: %s\n", buf);
 
     if (channel.maxpacket == 0) bug_proto();
     if (channel.pid <= 0 ) bug_proto();
@@ -231,7 +250,6 @@ void channel_put(unsigned char *buf, long long len) {
     byte_copy(channel.buf0 + channel.len0, len, buf);
     channel.len0 += len;
     channel.localwindow -= len;
-    printf("%s", buf);
 }
 
 /*
@@ -272,8 +290,8 @@ long long channel_read(unsigned char *buf, long long len) {
 
     long long r;
 
-    if (channel.maxpacket == 0) bug_proto();
-    if (channel.pid <= 0 ) bug_proto();
+    if (channel.maxpacket == 0)  return 0; // bug_proto();
+    if (channel.pid <= 0 ) return 0;
     if (channel.fd1 == -1) bug_proto();
 
     if (!buf || len < 0) bug_inval();
@@ -289,7 +307,7 @@ long long channel_read(unsigned char *buf, long long len) {
         if (errno == EAGAIN) return 0;
         if (errno == EWOULDBLOCK) return 0;
     }
-    if (r <= 0) {
+    if (r < 0) {
         channel.fd1 = -1;
         return 0;
     }
@@ -360,8 +378,8 @@ int channel_write(void) {
 
     long long w;
 
-    if (channel.maxpacket == 0) bug_proto();
-    if (channel.pid <= 0 ) bug_proto();
+    if (channel.maxpacket == 0) return 1;
+    if (channel.pid <= 0 ) return 1; // bug_proto();
     if (channel.fd0 == -1) bug_proto();
 
     if (channel.len0 <= 0) return 1;

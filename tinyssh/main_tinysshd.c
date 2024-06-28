@@ -228,6 +228,8 @@ rekeying:
         }
         // FIXME:
         watch0 = (void *)1;
+        watchfromchild = (void *)1;
+        watchtochild = (void *)1;
 
         if (watchtochild) {
 
@@ -285,8 +287,9 @@ rekeying:
                     packet_send();
                     break;
                 case SSH_MSG_CHANNEL_DATA:
-                    // printf("SSH_MSG_CHANNEL_DATA\n");
+                    printf("SSH_MSG_CHANNEL_DATA\n");
                     if (!packet_channel_recv_data(&b1)) die_fatal("unable to handle channel-data", 0, 0);
+                    packet_send();
                     break;
                 case SSH_MSG_CHANNEL_EXTENDED_DATA:
                     printf("SSH_MSG_CHANNEL_EXTENDED_DATA\n");
