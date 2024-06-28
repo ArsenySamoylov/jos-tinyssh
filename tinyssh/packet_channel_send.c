@@ -4,6 +4,8 @@ Jan Mojzis
 Public domain.
 */
 
+#include <inc/lib.h>
+
 #include "bug.h"
 #include "buf.h"
 #include "channel.h"

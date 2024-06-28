@@ -251,12 +251,14 @@ rekeying:
 
         /* check child */
         if (channel_iseof()) {
-            if (selfpipe[0] == -1) if (open_pipe(selfpipe) == -1) die_fatal("unable to open pipe", 0, 0);
-            signal(SIGCHLD, trigger);
-            if (channel_waitnohang(&exitsignal, &exitcode)) {
-                packet_channel_send_eof(&b2);
-                if (!packet_channel_send_close(&b2, exitsignal, exitcode)) die_fatal("unable to close channel", 0, 0);
-            }
+            cprintf("child is dead\n");
+            exit();
+            // if (selfpipe[0] == -1) if (open_pipe(selfpipe) == -1) die_fatal("unable to open pipe", 0, 0);
+            // signal(SIGCHLD, trigger);
+            // if (channel_waitnohang(&exitsignal, &exitcode)) {
+            packet_channel_send_eof(&b2);
+            if (!packet_channel_send_close(&b2, exitsignal, exitcode)) die_fatal("unable to close channel", 0, 0);
+            // }
         }
 
         /* send data to network */

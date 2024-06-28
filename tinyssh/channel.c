@@ -39,6 +39,7 @@ extern char *ptsname(int);
 */
 
 struct channel channel = {0};
+#define MAXLONGNUM 10
 
 /*
 The 'channel_open' function opens the channel.
@@ -136,6 +137,14 @@ void channel_ptyresize(crypto_uint32 a, crypto_uint32 b, crypto_uint32 x, crypto
     ioctl(channel.fd0, TIOCSWINSZ, &w);
 }
 
+
+// TODO:
+static void shell_died(int sig_no) {
+    cprintf("shell is died\n");
+    channel.fd1 = -1;
+    channel.fd2 = -1;
+}
+
 /*
 The 'channel_env' adds new environment variable
 sent from client.
@@ -155,6 +164,8 @@ if exec is requested, than command 'cmd' is executed.
 Process is executed under appropriate users UID.
 */
 int channel_exec(const char *cmd) {
+    char shell_stdin[MAXLONGNUM];
+    char shell_stdout[MAXLONGNUM];
 
     // TODO:
     if (!cmd) {
@@ -168,13 +179,16 @@ int channel_exec(const char *cmd) {
         if ((res = open_pipe(tochild)) < 0) {
             cprintf("cannot create tochild pipe %i\n", res);
         }
-        cprintf("fromchild[0] %d\n", fromchild[0]);
         assert(fromchild[0] == 2);
         assert(fromchild[1] == 3);
         assert(tochild[0] == 4);
         assert(tochild[1] == 5);
-        // FIXME:
-        channel.pid = spawnl("/bin/sh", "/bin/sh", "-p", "4", "3", (char *)0);
+
+        long_to_str(tochild[0], 10, shell_stdin, MAXLONGNUM);
+        long_to_str(fromchild[1], 10, shell_stdout, MAXLONGNUM);
+        signal(SIGCHLD, shell_died);
+
+        channel.pid = spawnl("/bin/sh", "/bin/sh", "-p", shell_stdin, shell_stdout, (char *)0);
         if (channel.pid < 0) {
             cprintf("spawnl error %i\n", channel.pid);
         }
@@ -385,6 +399,7 @@ int channel_write(void) {
     if (channel.len0 <= 0) return 1;
 
     w = write(channel.fd0, channel.buf0, channel.len0);
+    cprintf("write to child %d\n", w);
     if (w == -1) {
         if (errno == EINTR) return 1;
         if (errno == EAGAIN) return 1;
