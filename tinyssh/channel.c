@@ -8,7 +8,7 @@ The 'channel' library is used to handle data from/to SSH channel (rfc4254).
 
 #include <inc/types.h>
 #include <inc/wait.h>
-#include <inc/unistd.h>
+#include <inc/lib.h>
 #include <inc/signal.h>
 #include <inc/termios.h>
 #include <inc/ioctl.h>
