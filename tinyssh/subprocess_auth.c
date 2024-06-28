@@ -93,7 +93,7 @@ int subprocess_auth_authorizedkeys_(const char *keyname, const char *key, const 
     }
 
     do {
-        r = getlnfd(fd, buf, bufmax);
+        r = getln(fd, buf, bufmax);
         if (r == -1) {
             log_w3("auth: unable to read from file ", dir, "/.ssh/authorized_keys");
             return 0;

@@ -49,11 +49,11 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
     b->buf[0] = SSH_MSG_SERVICE_ACCEPT;
     packet_put(b);
     if (!packet_sendall()) return 0;
-    printf("send SSH_MSG_SERVICE_ACCEPT\n");
+    cprintf("send SSH_MSG_SERVICE_ACCEPT\n");
 
     for (count = 0; count < 32; ++count) {
         /* receive userauth request */
-        printf("recieve user auth request\n");
+        cprintf("recieve user auth request\n");
         pkname = "unknown";
         pos = 0;
         buf_purge(b);
@@ -71,13 +71,13 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
         pos = packetparser_uint32(b->buf, b->len, pos, &len);       /* publickey/password/hostbased/none */
         pos = packetparser_skip(b->buf, b->len, pos, len);
     
-        printf("get packet: [%s]\n", (char *)b->buf + pos - len);
+        cprintf("get packet: [%s]\n", (char *)b->buf + pos - len);
         if (str_equaln((char *)b->buf + pos - len, len, "none")) {
             /*
             if auth. none is enabled get the user from UID
             */
             if (flagnoneauth) {
-                printf("autorized\n");
+                cprintf("autorized\n");
                 struct passwd *pw;
                 pkname = "none";
                 pw = getpwuid(geteuid());
@@ -165,7 +165,7 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
         buf_putnum8(b, 0);
         packet_put(b);
         if (!packet_sendall()) return 0;
-        printf("reject, try again\n");
+        cprintf("reject, try again\n");
     }
     log_w1("auth: too many authentication tries");
     return 0;

@@ -10,6 +10,8 @@ Public domain.
 #include <inc/signal.h>
 #include <inc/poll.h>
 #include <inc/socket.h>
+#include <inc/fcntl.h>
+#include <inc/lib.h>
 
 #include "blocking.h"
 #include "ssh.h"
@@ -75,7 +77,15 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGALRM, timeout);
 
-    printf("set signals\n");
+    cprintf("set signals\n");
+    close(0);
+    close(1);
+    int sock_fd0 = opensock();
+    assert(sock_fd0 == 0);
+    int sock_fd1 = 1;
+    dup(sock_fd0, sock_fd1);
+    cprintf("open socket\n");
+
     if (str_equaln(binaryname, binarynamelen, "tinysshnoneauthd")) {
         usage = "usage: tinysshnoneauthd [options] keydir";
     }
@@ -122,7 +132,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
         if (geteuid() == 0) die_fatal("rejecting to run under UID=0", 0, 0);
         flagnoneauth = 1;
     }
-    printf("get connection info\n"); 
+    cprintf("get connection info\n"); 
     // TODO:
     // connectioninfo(channel.localip, channel.localport, channel.remoteip, channel.remoteport);
 
@@ -131,7 +141,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     // blocking_disable(0);
     // blocking_disable(1);
     // blocking_disable(2);
-    printf("blocking disable by default\n");
+    cprintf("blocking disable by default\n");
 
     /* get server longterm keys */
 
@@ -162,7 +172,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     if (!packet_kex_send()) die_fatal("unable to send kex-message", 0, 0);
     if (!packet_kex_receive()) die_fatal("unable to receive kex-message", 0, 0);
 
-    printf("\nsuccess send and recieve kex\n");
+    cprintf("\nsuccess send and recieve kex\n");
 
 rekeying:
     /* rekeying */
@@ -183,14 +193,14 @@ rekeying:
 
     /* authentication + authorization */
     if (packet.flagauthorized == 0) {
-        printf("try user  authentication and authorization\n");
+        cprintf("try user  authentication and authorization\n");
         if (!packet_auth(&b1, &b2, flagnoneauth)) die_fatal("authentication failed", 0, 0);
         packet.flagauthorized = 1;
     }
 
     /* note: user is authenticated and authorized */
     alarm(3600);
-    printf("user is authenticated and authorized\n");
+    cprintf("user is authenticated and authorized\n");
 
     /* main loop */
     for (;;) {
@@ -205,21 +215,15 @@ rekeying:
 
         q = p;
 
-        if (packet_sendisready()) { watch1 = q; q->fd = 1; q->events = POLLOUT; ++q; }
-        if (packet_recvisready()) { watch0 = q; q->fd = 0; q->events = POLLIN;  ++q; }
+        if (packet_sendisready()) { watch1 = q; q->fd = sock_fd1; q->events = POLLOUT; ++q; }
+        if (packet_recvisready()) { watch0 = q; q->fd = sock_fd0; q->events = POLLIN;  ++q; }
 
         if (channel_writeisready()) { watchtochild = q; q->fd = channel_getfd0(); q->events = POLLOUT; ++q; }
         if (channel_readisready() && packet_putisready()) { watchfromchild = q; q->fd = channel_getfd1(); q->events = POLLIN; ++q; }
 
         if (selfpipe[0] != -1) { watchselfpipe = q; q->fd = selfpipe[0]; q->events = POLLIN; ++q; }
 
-        // FIXME:
-        packet_channel_send_data(&b2);
-        channel_write();
-        // FIXME:
-        packet_send();
-        // FIXME:
-        if (devsocket_poll() < 0) {
+        if (poll(p, q - p, 60000) < 0) {
             watch0 = watch1 = 0;
             watchtochild = watchfromchild = 0;
             watchselfpipe = 0;
@@ -231,9 +235,6 @@ rekeying:
             if (watchtochild) if (!watchtochild->revents) watchtochild = 0;
             if (watchselfpipe) if (!watchselfpipe->revents) watchselfpipe = 0;
         }
-        // FIXME:
-        watch0 = (void *)1;
-        watch1 = (void *)1;
 
         if (watchtochild) {
 
@@ -281,33 +282,30 @@ rekeying:
 
             switch (b1.buf[0]) {
                 case SSH_MSG_CHANNEL_OPEN:
-                    printf("SSH_MSG_CHANNEL_OPEN\n");
+                    cprintf("SSH_MSG_CHANNEL_OPEN\n");
                     if (!packet_channel_open(&b1, &b2)) die_fatal("unable to open channel", 0, 0);
-                    packet_send();
                     break;
                 case SSH_MSG_CHANNEL_REQUEST:
-                    printf("SSH_MSG_CHANNEL_REQUEST\n");
+                    cprintf("SSH_MSG_CHANNEL_REQUEST\n");
                     if (!packet_channel_request(&b1, &b2, customcmd)) die_fatal("unable to handle channel-request", 0, 0);
-                    packet_send();
                     break;
                 case SSH_MSG_CHANNEL_DATA:
-                    printf("SSH_MSG_CHANNEL_DATA\n");
+                    cprintf("SSH_MSG_CHANNEL_DATA\n");
                     if (!packet_channel_recv_data(&b1)) die_fatal("unable to handle channel-data", 0, 0);
-                    packet_send();
                     break;
                 case SSH_MSG_CHANNEL_EXTENDED_DATA:
-                    printf("SSH_MSG_CHANNEL_EXTENDED_DATA\n");
+                    cprintf("SSH_MSG_CHANNEL_EXTENDED_DATA\n");
                     if (!packet_channel_recv_extendeddata(&b1)) die_fatal("unable to handle channel-extended-data", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_WINDOW_ADJUST:
                     if (!packet_channel_recv_windowadjust(&b1)) die_fatal("unable to handle channel-window-adjust", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_EOF:
-                    printf("SSH_MSG_CHANNEL_EOF\n");
+                    cprintf("SSH_MSG_CHANNEL_EOF\n");
                     if (!packet_channel_recv_eof(&b1)) die_fatal("unable to handle channel-eof", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_CLOSE:
-                    printf("SSH_MSG_CHANNEL_CLOSE\n");
+                    cprintf("SSH_MSG_CHANNEL_CLOSE\n");
                     if (!packet_channel_recv_close(&b1)) die_fatal("unable to handle channel-close", 0, 0);
                     break;
                 case SSH_MSG_KEXINIT:

@@ -4,9 +4,9 @@ Jan Mojzis
 Public domain.
 */
 
+#include <inc/lib.h>
 #include "buf.h"
 #include "byte.h"
-#include "inc/socket.h"
 #include "writeall.h"
 #include "purge.h"
 #include "log.h"
@@ -14,8 +14,6 @@ Public domain.
 #include "getln.h"
 #include "e.h"
 #include "packet.h"
-
-#include <inc/stdio.h>
 
 /*
 The 'packet_hello_send()' function sends SSH hello string to the client.
@@ -35,10 +33,10 @@ int packet_hello_send(void) {
     buf_puts(b, " ");
     buf_puts(b, log_string());
     buf_puts(b, "\r\n");
-    devsocket_send(b->buf, b->len);
+    if (writeall(1, b->buf, b->len) == -1) return 0;
     b->len -= 2; /* remove "\r\n" */
     b->buf[b->len] = 0;
-    printf("hello: server: %s\n", (char *)(b->buf));
+    cprintf("hello: server: %s\n", (char *)(b->buf));
     purge(b->buf + b->len, b->alloc - b->len);
     return 1;
 }
@@ -62,7 +60,7 @@ int packet_hello_receive(void) {
     if (b->buf[b->len - 1] == '\r') --(b->len); /* remove '\r' */
     b->buf[b->len] = 0;
     if (!byte_isequal(b->buf, 4, "SSH-")) { errno = EPROTO; return 0; }
-    printf("hello: client: %s", (char *)b->buf);
+    cprintf("hello: client: %s", (char *)b->buf);
     purge(b->buf + b->len, b->alloc - b->len);
     return 1;
 }

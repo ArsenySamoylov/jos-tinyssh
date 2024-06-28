@@ -158,15 +158,15 @@ int channel_exec(const char *cmd) {
 
     // TODO:
     if (!cmd) {
-        printf("requrst: exec: spawn shell\n");
+        cprintf("requrst: exec: spawn shell\n");
         int fromchild[2];
         int tochild[2];
         int res = 0;
-        if ((res = pipe(fromchild)) < 0) {
-            printf("cannot create fromchild pipe %i\n", res);
+        if ((res = open_pipe(fromchild)) < 0) {
+            cprintf("cannot create fromchild pipe %i\n", res);
         }
-        if ((res = pipe(tochild)) < 0) {
-            printf("cannot create tochild pipe %i\n", res);
+        if ((res = open_pipe(tochild)) < 0) {
+            cprintf("cannot create tochild pipe %i\n", res);
         }
         cprintf("fromchild[0] %d\n", fromchild[0]);
         assert(fromchild[0] == 2);
@@ -238,7 +238,7 @@ The 'channel_put' function adds data from
 client to childs buffer.
 */
 void channel_put(unsigned char *buf, long long len) {
-    printf("try put: %2d\n", buf[0]);
+    cprintf("try put: %2d\n", buf[0]);
 
     if (channel.maxpacket == 0) bug_proto();
     if (channel.pid <= 0 ) bug_proto();
@@ -290,8 +290,8 @@ long long channel_read(unsigned char *buf, long long len) {
 
     long long r;
 
-    if (channel.maxpacket == 0)  return 0; // bug_proto();
-    if (channel.pid <= 0 ) return 0;
+    if (channel.maxpacket == 0) bug_proto();
+    if (channel.pid <= 0 ) bug_proto();
     if (channel.fd1 == -1) bug_proto();
 
     if (!buf || len < 0) bug_inval();
@@ -378,8 +378,8 @@ int channel_write(void) {
 
     long long w;
 
-    if (channel.maxpacket == 0) return 1;
-    if (channel.pid <= 0 ) return 1; // bug_proto();
+    if (channel.maxpacket == 0) bug_proto();
+    if (channel.pid <= 0 ) bug_proto();
     if (channel.fd0 == -1) bug_proto();
 
     if (channel.len0 <= 0) return 1;

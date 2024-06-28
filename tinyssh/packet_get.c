@@ -34,7 +34,7 @@ static int packet_get_plain_(struct buf *b) {
 
     /* parse length */
     packet_length = uint32_unpack_big(pp);
-    printf("packet length %d\n", packet_length);
+    cprintf("packet length %d\n", packet_length);
     if (packet_length > PACKET_LIMIT) {
         char buf1[NUMTOSTR_LEN];
         char buf2[NUMTOSTR_LEN];
@@ -125,7 +125,7 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
     for (;;) {
         before = packet.recvbuf.len;
         if (!packet_get(b, ch)) {
-            printf("cannot get packet\n");
+            cprintf("cannot get packet\n");
             return 0;
         }
         if (b->len > 0) break;
@@ -137,6 +137,6 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
             sys_yield();
         }
     }
-    printf("succes get all packets with type: %02d\n", ch);
+    cprintf("succes get all packets with type: %02d\n", ch);
     return 1;
 }

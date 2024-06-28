@@ -5,6 +5,7 @@
 #include <inc/fcntl.h>
 #include <inc/stdio.h>
 #include <inc/lib.h>
+#include <inc/fcntl.h>
 #include "blocking.h"
 #include "open.h"
 
@@ -18,9 +19,8 @@ int open_pipe(int *fd)
   int i;
   if (pipe(fd) == -1) return -1;
   for (i = 0;i < 2;++i) {
-    // TODO:
-    // fcntl(fd[i],F_SETFD,1);
-    // blocking_disable(fd[i]);
+    fcntl(fd[i],F_SETFD,1);
+    blocking_disable(fd[i]);
   }
   return 0;
 }
@@ -30,7 +30,7 @@ int open_read(const char *fn)
 #ifdef O_CLOEXEC
   return open(fn,O_RDONLY | O_NONBLOCK | O_CLOEXEC);
 #else
-  printf("try open %s\n", fn);
+  cprintf("try open %s\n", fn);
   int fd = open(fn, O_RDONLY);
   if (fd == -1) return -1;
   // fcntl(fd,F_SETFD,1);

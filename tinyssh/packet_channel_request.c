@@ -41,7 +41,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         boolean   want reply
         string    command
 */
-        printf("request: exec\n");
+        cprintf("request: exec\n");
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -67,7 +67,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         boolean   want reply
         string    subsystem name
 */
-        printf("request: subsystem\n");
+        cprintf("request: subsystem\n");
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -99,7 +99,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         string    "shell"
         boolean   want reply
 */
-        printf("request: shell\n");
+        cprintf("request: shell\n");
 
         pos = packetparser_end(b1->buf, b1->len, pos);
 
@@ -123,7 +123,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         string    variable name
         string    variable value
 */
-        printf("request: env\n");
+        cprintf("request: env\n");
 
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);     /* string    variable name */
         p1 = (char *)b1->buf + pos;
@@ -137,7 +137,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         p2[plen2] = 0;
 
         if (channel_env(p1, p2)) {
-            printf("request: env: %s=%s, %d\n", p1, p2, wantreply);
+            cprintf("request: env: %s=%s, %d\n", p1, p2, wantreply);
             log_d5("packet=SSH_MSG_CHANNEL_REQUEST, env ", p1, "=", p2, ", accepted");
             goto accept;
         }
@@ -160,7 +160,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
         uint32    terminal height, pixels (e.g., 480)
         string    encoded terminal modes
 */
-        printf("request: pty-req\n");
+        cprintf("request: pty-req\n");
         pos = packetparser_uint32(b1->buf, b1->len, pos, &plen1);
         p1 = (char *)b1->buf + pos;
         pos = packetparser_skip(b1->buf, b1->len, pos, plen1);
@@ -196,7 +196,7 @@ int packet_channel_request(struct buf *b1, struct buf *b2, const char *customcmd
       uint32    terminal width, pixels
       uint32    terminal height, pixels
 */
-        printf("request: window-change\n");
+        cprintf("request: window-change\n");
 
         pos = packetparser_uint32(b1->buf, b1->len, pos, &a);
         pos = packetparser_uint32(b1->buf, b1->len, pos, &b);

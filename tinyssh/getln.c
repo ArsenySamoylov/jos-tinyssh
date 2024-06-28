@@ -4,11 +4,12 @@ Jan Mojzis
 Public domain.
 */
 
+#include <inc/lib.h>
 #include <inc/poll.h>
 #include <inc/unistd.h>
 #include <inc/socket.h>
+
 #include "e.h"
-#include "inc/lib.h"
 #include "getln.h"
 
 static int getch(int fd, char *x) {
@@ -18,13 +19,11 @@ static int getch(int fd, char *x) {
 
     for (;;) {
         r = read(fd, x, 1);
-        if (r == -1) {
-            if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) {
+        if (r <= 0) {
                 p.fd = fd;
                 p.events = POLLIN | POLLERR;
                 poll(&p, 1, -1);
                 continue;
-            }
         }
         break;
     }
@@ -49,7 +48,7 @@ int getln(int fd, void *xv, long long xmax) {
     xlen = 0;
     for (;;) {
         if (xlen >= xmax - 1) { x[xmax - 1] = 0; errno = ENOMEM; return -1; }
-        r = devsocket_recv(&ch, 1);
+        r = getch(fd, &ch);
         if (r == 0) continue;
         if (ch == 0) ch = '\n';
         x[xlen++] = ch;
@@ -59,28 +58,3 @@ int getln(int fd, void *xv, long long xmax) {
     x[xlen] = 0;
     return r;
 }
-
-int getlnfd(int fd, void *xv, long long xmax) {
-
-    long long xlen;
-    int r;
-    char ch;
-    char *x = (char *)xv;
-
-    if (xmax < 1) { errno = EINVAL; return -1; }
-    x[0] = 0;
-    if (fd < 0) { errno = EBADF; return -1; }
-
-    xlen = 0;
-    for (;;) {
-        if (xlen >= xmax - 1) { x[xmax - 1] = 0; errno = ENOMEM; return -1; }
-        r = read(fd, &ch, 1);
-        if (ch == 0 || r == 0) ch = '\n';
-        x[xlen++] = ch;
-        if (ch == '\n') break;
-        sys_yield();
-    }
-    x[xlen] = 0;
-    return r;
-}
-
