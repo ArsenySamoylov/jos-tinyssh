@@ -35,6 +35,7 @@ void packet_channel_send_data(struct buf *b) {
     uint32_pack_big(b->buf + 1, channel_getid());       /* uint32    recipient channel    */
     uint32_pack_big(b->buf + 5, r);                     /* string    data                 */
     packet_put(b);
+    packet_send();
     buf_purge(b);
     return;
 }

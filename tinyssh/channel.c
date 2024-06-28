@@ -238,7 +238,7 @@ The 'channel_put' function adds data from
 client to childs buffer.
 */
 void channel_put(unsigned char *buf, long long len) {
-    printf("try put: %s\n", buf);
+    printf("try put: %2d\n", buf[0]);
 
     if (channel.maxpacket == 0) bug_proto();
     if (channel.pid <= 0 ) bug_proto();

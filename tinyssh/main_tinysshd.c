@@ -214,6 +214,11 @@ rekeying:
         if (selfpipe[0] != -1) { watchselfpipe = q; q->fd = selfpipe[0]; q->events = POLLIN; ++q; }
 
         // FIXME:
+        packet_channel_send_data(&b2);
+        channel_write();
+        // FIXME:
+        packet_send();
+        // FIXME:
         if (devsocket_poll() < 0) {
             watch0 = watch1 = 0;
             watchtochild = watchfromchild = 0;
@@ -228,8 +233,7 @@ rekeying:
         }
         // FIXME:
         watch0 = (void *)1;
-        watchfromchild = (void *)1;
-        watchtochild = (void *)1;
+        watch1 = (void *)1;
 
         if (watchtochild) {
 

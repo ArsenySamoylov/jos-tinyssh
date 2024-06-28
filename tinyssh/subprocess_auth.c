@@ -86,14 +86,15 @@ int subprocess_auth_authorizedkeys_(const char *keyname, const char *key, const 
     int fd = -1;
     int r;
 
-    fd = open_read("authorized_keys");
+    fd = open_read("/.ssh/authorized_keys");
     if (fd == -1) {
         log_w3("auth: unable to open file: ", dir, "/.ssh/authorized_keys");
         return 0;
     }
 
     do {
-        r = getln(fd, buf, bufmax);
+        r = getlnfd(fd, buf, bufmax);
+        cprintf("getline res: %d\n", r);
         if (r == -1) {
             log_w3("auth: unable to read from file ", dir, "/.ssh/authorized_keys");
             return 0;
@@ -118,41 +119,44 @@ int subprocess_auth(const char *account, const char *keyname, const char *key) {
     if (pid == 0) {
 
         #define buf global_bspace2 /* reusing global buffer */
-        struct passwd *pw;
+        struct passwd pw;
 
         if (!account || !keyname || !key) bug_inval();
         if (sshcrypto_sign_BASE64PUBLICKEYMIN > str_len(key) + 1) bug_inval();
 
         /* drop privileges */
-        pw = getpwnam(account);
-        if (!pw) { 
-            log_w3("auth: account ", account, ": not exist");
-            global_die(111);
-        }
-        if (!dropuidgid(pw->pw_name, pw->pw_uid, pw->pw_gid)) {
-            log_w2("auth: unable to drop privileges to account ", account);
-            global_die(111);
-        }
+        // TODO:
+        // pw = getpwnam(account);
+        // if (!pw) { 
+        //     log_w3("auth: account ", account, ": not exist");
+        //     global_die(111);
+        // }
+        // if (!dropuidgid(pw->pw_name, pw->pw_uid, pw->pw_gid)) {
+        //     log_w2("auth: unable to drop privileges to account ", account);
+        //     global_die(111);
+        // }
 
         /* change directory to ~/.ssh */
-        if (chdir(pw->pw_dir) == -1) {
-            log_w2("auth: unable to change directory to ", pw->pw_dir);
-            global_die(111);
-        }
+        // TODO:
+        // if (chdir(pw->pw_dir) == -1) {
+        //     log_w2("auth: unable to change directory to ", pw->pw_dir);
+        //     global_die(111);
+        // }
+        pw.pw_dir = "/";
+    
         if (chdir(".ssh") == -1) {
-            log_w3("auth: unable to change directory to ", pw->pw_dir, "/.ssh");
+            log_w3("auth: unable to change directory to ", pw.pw_dir, "/.ssh");
             global_die(111);
         }
 
         /* authorization starts here */
-        if (!subprocess_auth_checkpath_((char *)buf, sizeof buf, pw->pw_uid)) global_die(111);
-        if (!subprocess_auth_authorizedkeys_(keyname, key, pw->pw_dir, (char *)buf, sizeof buf))  global_die(111);
+        // if (!subprocess_auth_checkpath_((char *)buf, sizeof buf, pw.pw_uid)) global_die(111);
+        if (!subprocess_auth_authorizedkeys_(keyname, key, pw.pw_dir, (char *)buf, sizeof buf))  global_die(111);
         /* authorization ends here */
 
         global_die(0);
     }
 
-    while (waitpid(pid, &status, 0) != pid) {};
-    if (!WIFEXITED(status)) return -1;
-    return WEXITSTATUS(status);
+    while (waitpid(pid, &status, 0) != -1) {};
+    return 0;
 }
