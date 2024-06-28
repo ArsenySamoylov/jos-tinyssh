@@ -90,7 +90,7 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
         if (str_equaln((char *)b->buf + pos - len, len, "password")) pkname = "password";
         if (str_equaln((char *)b->buf + pos - len, len, "hostbased")) pkname = "hostbased";
         if (str_equaln((char *)b->buf + pos - len, len, "publickey")) {
-            printf("recieved public key packet\n");
+            cprintf("recieved public key packet\n");
             goto authorized;
             pos = packetparser_uint8(b->buf, b->len, pos, &flagsignature);
 
