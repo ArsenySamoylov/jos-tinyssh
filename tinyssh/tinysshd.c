@@ -10,6 +10,8 @@ Multi-call binary wrapper
 
 #include <inc/unistd.h>
 #include <inc/stdio.h>
+
+#include "debug.h"
 #include "str.h"
 #include "main.h"
 
@@ -28,7 +30,7 @@ static char *x;
 static long long xlen;
 
 int main(int argc, char **argv) {
-    cprintf("in main function\n");
+    dprintf("in main function\n");
     if (argc < 1) _exit(100);
     if (!argv[0]) _exit(100);
 

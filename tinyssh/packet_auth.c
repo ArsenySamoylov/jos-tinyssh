@@ -4,6 +4,7 @@ Jan Mojzis
 Public domain.
 */
 
+#include "debug.h"
 #include <inc/pwd.h>
 #include "buf.h"
 #include "ssh.h"
@@ -49,11 +50,11 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
     b->buf[0] = SSH_MSG_SERVICE_ACCEPT;
     packet_put(b);
     if (!packet_sendall()) return 0;
-    cprintf("send SSH_MSG_SERVICE_ACCEPT\n");
+    dprintf("send SSH_MSG_SERVICE_ACCEPT\n");
 
     for (count = 0; count < 32; ++count) {
         /* receive userauth request */
-        cprintf("recieve user auth request\n");
+        dprintf("recieve user auth request\n");
         pkname = "unknown";
         pos = 0;
         buf_purge(b);
@@ -71,13 +72,13 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
         pos = packetparser_uint32(b->buf, b->len, pos, &len);       /* publickey/password/hostbased/none */
         pos = packetparser_skip(b->buf, b->len, pos, len);
     
-        cprintf("get packet: [%s]\n", (char *)b->buf + pos - len);
+        dprintf("get packet: [%s]\n", (char *)b->buf + pos - len);
         if (str_equaln((char *)b->buf + pos - len, len, "none")) {
             /*
             if auth. none is enabled get the user from UID
             */
             if (flagnoneauth) {
-                cprintf("autorized\n");
+                dprintf("autorized\n");
                 struct passwd *pw;
                 pkname = "none";
                 pw = getpwuid(geteuid());
@@ -90,7 +91,7 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
         if (str_equaln((char *)b->buf + pos - len, len, "password")) pkname = "password";
         if (str_equaln((char *)b->buf + pos - len, len, "hostbased")) pkname = "hostbased";
         if (str_equaln((char *)b->buf + pos - len, len, "publickey")) {
-            cprintf("recieved public key packet\n");
+            dprintf("recieved public key packet\n");
             goto authorized;
             pos = packetparser_uint8(b->buf, b->len, pos, &flagsignature);
 
@@ -165,7 +166,7 @@ int packet_auth(struct buf *b, struct buf *b2, int flagnoneauth) {
         buf_putnum8(b, 0);
         packet_put(b);
         if (!packet_sendall()) return 0;
-        cprintf("reject, try again\n");
+        dprintf("reject, try again\n");
     }
     log_w1("auth: too many authentication tries");
     return 0;

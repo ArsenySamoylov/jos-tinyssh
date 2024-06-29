@@ -5,6 +5,8 @@ Public domain.
 */
 
 #include <inc/lib.h>
+
+#include "debug.h"
 #include "buf.h"
 #include "byte.h"
 #include "writeall.h"
@@ -36,7 +38,7 @@ int packet_hello_send(void) {
     if (writeall(1, b->buf, b->len) == -1) return 0;
     b->len -= 2; /* remove "\r\n" */
     b->buf[b->len] = 0;
-    cprintf("hello: server: %s\n", (char *)(b->buf));
+    dprintf("hello: server: %s\n", (char *)(b->buf));
     purge(b->buf + b->len, b->alloc - b->len);
     return 1;
 }
@@ -60,7 +62,7 @@ int packet_hello_receive(void) {
     if (b->buf[b->len - 1] == '\r') --(b->len); /* remove '\r' */
     b->buf[b->len] = 0;
     if (!byte_isequal(b->buf, 4, "SSH-")) { errno = EPROTO; return 0; }
-    cprintf("hello: client: %s", (char *)b->buf);
+    dprintf("hello: client: %s", (char *)b->buf);
     purge(b->buf + b->len, b->alloc - b->len);
     return 1;
 }

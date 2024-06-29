@@ -8,6 +8,7 @@ Public domain.
 #include <inc/unistd.h>
 #include <inc/lib.h>
 
+#include "debug.h"
 #include "byte.h"
 #include "e.h"
 #include "bug.h"
@@ -34,7 +35,7 @@ static int packet_get_plain_(struct buf *b) {
 
     /* parse length */
     packet_length = uint32_unpack_big(pp);
-    cprintf("packet length %d\n", packet_length);
+    dprintf("packet length %d\n", packet_length);
     if (packet_length > PACKET_LIMIT) {
         char buf1[NUMTOSTR_LEN];
         char buf2[NUMTOSTR_LEN];
@@ -125,7 +126,7 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
     for (;;) {
         before = packet.recvbuf.len;
         if (!packet_get(b, ch)) {
-            cprintf("cannot get packet\n");
+            dprintf("cannot get packet\n");
             return 0;
         }
         if (b->len > 0) break;
@@ -137,6 +138,6 @@ int packet_getall(struct buf *b, crypto_uint8 ch) {
             sys_yield();
         }
     }
-    cprintf("succes get all packets with type: %02d\n", ch);
+    dprintf("succes get all packets with type: %02d\n", ch);
     return 1;
 }

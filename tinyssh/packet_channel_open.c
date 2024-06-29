@@ -4,6 +4,7 @@ Jan Mojzis
 Public domain.
 */
 
+#include "debug.h"
 #include "buf.h"
 #include "ssh.h"
 #include "e.h"
@@ -57,7 +58,7 @@ int packet_channel_open(struct buf *b1, struct buf *b2) {
             buf_putnum32(b2, PACKET_LIMIT / 2);                     /* uint32    maximum packet size */
             packet_put(b2);
             buf_purge(b2);
-            cprintf("open: session\n");
+            dprintf("open: session\n");
             return 1;
         }
     }

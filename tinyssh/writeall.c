@@ -18,7 +18,6 @@ int writeall(int fd,const void *xv,long long xlen)
         struct pollfd p;
         p.fd = fd;
         p.events = POLLOUT | POLLERR;
-        panic("//TODO: %s:%s\n", __FILE__, __FUNCTION__);
         poll(&p,1,-1);
         continue;
       }

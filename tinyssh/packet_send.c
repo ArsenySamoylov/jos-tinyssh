@@ -8,6 +8,7 @@ Public domain.
 #include <inc/lib.h>
 #include <inc/socket.h>
 
+#include "debug.h"
 #include "writeall.h"
 #include "e.h"
 #include "byte.h"
@@ -41,7 +42,7 @@ int packet_send(void) {
 
 int packet_sendall(void) {
     if (writeall(1, packet.sendbuf.buf, packet.sendbuf.len) == -1) return 0;
-    cprintf("send all packets with len %lld\n", packet.sendbuf.len);    
+    dprintf("send all packets with len %lld\n", packet.sendbuf.len); 
     purge(packet.sendbuf.buf, packet.sendbuf.len);
     packet.sendbuf.len = 0;
     return 1;

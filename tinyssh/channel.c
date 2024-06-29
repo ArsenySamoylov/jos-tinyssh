@@ -13,7 +13,9 @@ The 'channel' library is used to handle data from/to SSH channel (rfc4254).
 #include <inc/termios.h>
 #include <inc/ioctl.h>
 #include <inc/paths.h>
+
 extern char *ptsname(int);
+#include "debug.h"
 #include "byte.h"
 #include "bug.h"
 #include "newenv.h"
@@ -140,7 +142,6 @@ void channel_ptyresize(crypto_uint32 a, crypto_uint32 b, crypto_uint32 x, crypto
 
 // TODO:
 static void shell_died(int sig_no) {
-    cprintf("shell is died\n");
     channel.fd1 = -1;
     channel.fd2 = -1;
 }
@@ -167,22 +168,17 @@ int channel_exec(const char *cmd) {
     char shell_stdin[MAXLONGNUM];
     char shell_stdout[MAXLONGNUM];
 
-    // TODO:
     if (!cmd) {
-        cprintf("requrst: exec: spawn shell\n");
+        dprintf("requrst: exec: spawn shell\n");
         int fromchild[2];
         int tochild[2];
         int res = 0;
         if ((res = open_pipe(fromchild)) < 0) {
-            cprintf("cannot create fromchild pipe %i\n", res);
+            dprintf("cannot create fromchild pipe %i\n", res);
         }
         if ((res = open_pipe(tochild)) < 0) {
-            cprintf("cannot create tochild pipe %i\n", res);
+            dprintf("cannot create tochild pipe %i\n", res);
         }
-        assert(fromchild[0] == 2);
-        assert(fromchild[1] == 3);
-        assert(tochild[0] == 4);
-        assert(tochild[1] == 5);
 
         long_to_str(tochild[0], 10, shell_stdin, MAXLONGNUM);
         long_to_str(fromchild[1], 10, shell_stdout, MAXLONGNUM);
@@ -190,7 +186,7 @@ int channel_exec(const char *cmd) {
 
         channel.pid = spawnl("/bin/sh", "/bin/sh", "-p", shell_stdin, shell_stdout, (char *)0);
         if (channel.pid < 0) {
-            cprintf("spawnl error %i\n", channel.pid);
+            dprintf("spawnl error %i\n", channel.pid);
         }
         channel.fd0 = tochild[1];
         channel.fd1 = fromchild[0];
@@ -198,53 +194,6 @@ int channel_exec(const char *cmd) {
     } else {
         panic("Unimplemented\n");
     }
-    
-    char *run[4];
-    char *shell;
-    char *name;
-    int fd[3];
-    char ln[NAME_MAX + 2];
-
-    if (channel.maxpacket == 0) bug_proto();
-    if (channel.pid != 0 ) bug_proto();
-
-    if (channel.flagterminal) {
-        channel.pid = channel_forkpty(fd, channel.master, channel.slave);
-        if (channel.pid > 0) {
-            name = ptsname(fd[0]);
-            if (!name) bug();
-            if (!str_copyn(channel.termname, sizeof channel.termname, name)) bug_nomem();
-        }
-    }
-    else {
-        channel.pid = channel_fork(fd);
-    }
-    if (channel.pid == -1) return 0;
-    if (channel.pid == 0) {
-        logsys_login(channel.user, channel.remoteip, 0, 0);
-        if (!channel_droppriv(channel.user, &shell)) _exit(111);
-        if (cmd) {
-            run[0] = shell;
-            run[1] = (char *)"-c";
-            run[2] = (char *)cmd;
-            run[3] = 0;
-        }
-        else {
-            if (!loginshell(ln, sizeof ln, shell)) bug();
-            run[0] = ln;
-            run[1] = 0;
-        }
-        signal(SIGPIPE, SIG_DFL);
-        newenv_exec(shell, run);
-        _exit(111);
-    }
-    channel.fd0 = fd[0];
-    channel.fd1 = fd[1];
-    channel.fd2 = fd[2];
-    channel.len0 = 0;
-    newenv_purge();
-    if (channel.flagterminal && channel.pid > 0) channel_ptyresize(channel.a, channel.b, channel.x, channel.y);
-    return 1;
 }
 
 /*
@@ -252,7 +201,7 @@ The 'channel_put' function adds data from
 client to childs buffer.
 */
 void channel_put(unsigned char *buf, long long len) {
-    cprintf("try put: %2d\n", buf[0]);
+    dprintf("try put: %2d\n", buf[0]);
 
     if (channel.maxpacket == 0) bug_proto();
     if (channel.pid <= 0 ) bug_proto();
@@ -399,7 +348,7 @@ int channel_write(void) {
     if (channel.len0 <= 0) return 1;
 
     w = write(channel.fd0, channel.buf0, channel.len0);
-    cprintf("write to child %d\n", w);
+    dprintf("write to child %d\n", w);
     if (w == -1) {
         if (errno == EINTR) return 1;
         if (errno == EAGAIN) return 1;

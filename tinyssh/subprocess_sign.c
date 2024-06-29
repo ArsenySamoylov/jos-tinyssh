@@ -10,6 +10,7 @@ Public domain.
 #include <inc/stdio.h>
 #include <inc/lib.h>
 
+#include "debug.h"
 #include "load.h"
 #include "log.h"
 #include "open.h"
@@ -43,12 +44,12 @@ int subprocess_sign(unsigned char *y, long long ylen, const char *keydir, unsign
     unsigned long long smlen;
 
     if (load(sshcrypto_sign_secretkeyfilename, sk, sshcrypto_sign_secretkeybytes) == -1) {
-        cprintf("sign: unable to load secret-key from file %s%s%s", keydir, "/", sshcrypto_sign_secretkeyfilename);
+        dprintf("sign: unable to load secret-key from file %s%s%s", keydir, "/", sshcrypto_sign_secretkeyfilename);
         purge(sk, sizeof sk);
         global_die(111);
     }
     if (sshcrypto_sign(sm, &smlen, x, sshcrypto_hash_bytes, sk) != 0) { 
-        cprintf("sign: unable to sign using secret-key from file %s%s%s", keydir, "/", sshcrypto_sign_secretkeyfilename);
+        dprintf("sign: unable to sign using secret-key from file %s%s%s", keydir, "/", sshcrypto_sign_secretkeyfilename);
         purge(sk, sizeof sk);
         global_die(111);
     }

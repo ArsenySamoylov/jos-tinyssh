@@ -13,6 +13,7 @@ Public domain.
 #include <inc/fcntl.h>
 #include <inc/lib.h>
 
+#include "debug.h"
 #include "blocking.h"
 #include "ssh.h"
 #include "purge.h"
@@ -77,14 +78,14 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGALRM, timeout);
 
-    cprintf("set signals\n");
+    dprintf("set signals\n");
     close(0);
     close(1);
     int sock_fd0 = opensock();
     assert(sock_fd0 == 0);
-    int sock_fd1 = 1;
+    int sock_fd1 = sock_fd0 + 1;;
     dup(sock_fd0, sock_fd1);
-    cprintf("open socket\n");
+    dprintf("open socket\n");
 
     if (str_equaln(binaryname, binarynamelen, "tinysshnoneauthd")) {
         usage = "usage: tinysshnoneauthd [options] keydir";
@@ -132,16 +133,9 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
         if (geteuid() == 0) die_fatal("rejecting to run under UID=0", 0, 0);
         flagnoneauth = 1;
     }
-    cprintf("get connection info\n"); 
-    // TODO:
-    // connectioninfo(channel.localip, channel.localport, channel.remoteip, channel.remoteport);
-
     global_init();
 
-    // blocking_disable(0);
-    // blocking_disable(1);
-    // blocking_disable(2);
-    cprintf("blocking disable by default\n");
+    dprintf("blocking disable\n");
 
     /* get server longterm keys */
 
@@ -172,7 +166,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     if (!packet_kex_send()) die_fatal("unable to send kex-message", 0, 0);
     if (!packet_kex_receive()) die_fatal("unable to receive kex-message", 0, 0);
 
-    cprintf("\nsuccess send and recieve kex\n");
+    dprintf("\nsuccess send and recieve kex\n");
 
 rekeying:
     /* rekeying */
@@ -193,14 +187,14 @@ rekeying:
 
     /* authentication + authorization */
     if (packet.flagauthorized == 0) {
-        cprintf("try user  authentication and authorization\n");
+        dprintf("try user  authentication and authorization\n");
         if (!packet_auth(&b1, &b2, flagnoneauth)) die_fatal("authentication failed", 0, 0);
         packet.flagauthorized = 1;
     }
 
     /* note: user is authenticated and authorized */
     alarm(3600);
-    cprintf("user is authenticated and authorized\n");
+    dprintf("user is authenticated and authorized\n");
 
     /* main loop */
     for (;;) {
@@ -240,10 +234,6 @@ rekeying:
 
             /* write data to child */
             if (!channel_write()) die_fatal("unable to write data to child", 0, 0);
-
-            /* try to adjust window */
-            // TODO:
-            // if (!packet_channel_send_windowadjust(&b1)) die_fatal("unable to send data to network", 0, 0);
         }
 
         /* read data from child */
@@ -251,14 +241,12 @@ rekeying:
 
         /* check child */
         if (channel_iseof()) {
-            cprintf("child is dead\n");
-            exit();
-            // if (selfpipe[0] == -1) if (open_pipe(selfpipe) == -1) die_fatal("unable to open pipe", 0, 0);
-            // signal(SIGCHLD, trigger);
-            // if (channel_waitnohang(&exitsignal, &exitcode)) {
-            packet_channel_send_eof(&b2);
-            if (!packet_channel_send_close(&b2, exitsignal, exitcode)) die_fatal("unable to close channel", 0, 0);
-            // }
+            if (selfpipe[0] == -1) if (open_pipe(selfpipe) == -1) die_fatal("unable to open pipe", 0, 0);
+            signal(SIGCHLD, trigger);
+            if (channel_waitnohang(&exitsignal, &exitcode)) {
+                packet_channel_send_eof(&b2);
+                if (!packet_channel_send_close(&b2, exitsignal, exitcode)) die_fatal("unable to close channel", 0, 0);
+            }
         }
 
         /* send data to network */
@@ -284,30 +272,30 @@ rekeying:
 
             switch (b1.buf[0]) {
                 case SSH_MSG_CHANNEL_OPEN:
-                    cprintf("SSH_MSG_CHANNEL_OPEN\n");
+                    dprintf("SSH_MSG_CHANNEL_OPEN\n");
                     if (!packet_channel_open(&b1, &b2)) die_fatal("unable to open channel", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_REQUEST:
-                    cprintf("SSH_MSG_CHANNEL_REQUEST\n");
+                    dprintf("SSH_MSG_CHANNEL_REQUEST\n");
                     if (!packet_channel_request(&b1, &b2, customcmd)) die_fatal("unable to handle channel-request", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_DATA:
-                    cprintf("SSH_MSG_CHANNEL_DATA\n");
+                    dprintf("SSH_MSG_CHANNEL_DATA\n");
                     if (!packet_channel_recv_data(&b1)) die_fatal("unable to handle channel-data", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_EXTENDED_DATA:
-                    cprintf("SSH_MSG_CHANNEL_EXTENDED_DATA\n");
+                    dprintf("SSH_MSG_CHANNEL_EXTENDED_DATA\n");
                     if (!packet_channel_recv_extendeddata(&b1)) die_fatal("unable to handle channel-extended-data", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_WINDOW_ADJUST:
                     if (!packet_channel_recv_windowadjust(&b1)) die_fatal("unable to handle channel-window-adjust", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_EOF:
-                    cprintf("SSH_MSG_CHANNEL_EOF\n");
+                    dprintf("SSH_MSG_CHANNEL_EOF\n");
                     if (!packet_channel_recv_eof(&b1)) die_fatal("unable to handle channel-eof", 0, 0);
                     break;
                 case SSH_MSG_CHANNEL_CLOSE:
-                    cprintf("SSH_MSG_CHANNEL_CLOSE\n");
+                    dprintf("SSH_MSG_CHANNEL_CLOSE\n");
                     if (!packet_channel_recv_close(&b1)) die_fatal("unable to handle channel-close", 0, 0);
                     break;
                 case SSH_MSG_KEXINIT:

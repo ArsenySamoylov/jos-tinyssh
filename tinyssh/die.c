@@ -5,7 +5,7 @@
 
 void die_usage(const char *x) {
 
-    log_u1(x);
+    cprintf("%s\n", x);
     global_die(100);
 }
 
