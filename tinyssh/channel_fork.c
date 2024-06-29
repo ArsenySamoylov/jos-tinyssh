@@ -5,6 +5,7 @@ Public domain.
 */
 
 #include <inc/unistd.h>
+#include <inc/lib.h>
 #include "blocking.h"
 #include "open.h"
 #include "channel.h"

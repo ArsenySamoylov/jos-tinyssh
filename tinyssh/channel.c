@@ -13,6 +13,8 @@ The 'channel' library is used to handle data from/to SSH channel (rfc4254).
 #include <inc/termios.h>
 #include <inc/ioctl.h>
 #include <inc/paths.h>
+#include <inc/convert.h>
+#include "open.h"
 
 extern char *ptsname(int);
 #include "debug.h"

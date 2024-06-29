@@ -10,6 +10,7 @@ for 2 versatile buffers.
 */
 
 #include <inc/unistd.h>
+#include <inc/lib.h>
 #include "newenv.h"
 #include "channel.h"
 #include "packet.h"

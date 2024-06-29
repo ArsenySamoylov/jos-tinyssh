@@ -7,6 +7,7 @@ Public domain.
 #include <inc/types.h>
 #include <inc/stat.h>
 #include <inc/unistd.h>
+#include <inc/lib.h>
 #include "savesync.h"
 #include "log.h"
 #include "sshcrypto.h"

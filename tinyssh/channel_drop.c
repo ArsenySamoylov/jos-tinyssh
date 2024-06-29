@@ -7,6 +7,7 @@ Public domain.
 #include <inc/stat.h>
 #include <inc/unistd.h>
 #include <inc/pwd.h>
+#include <inc/lib.h>
 #include "dropuidgid.h"
 #include "newenv.h"
 #include "channel.h"

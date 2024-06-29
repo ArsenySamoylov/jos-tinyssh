@@ -3,6 +3,7 @@
 #include <inc/stat.h>
 #include <inc/fcntl.h>
 #include <inc/unistd.h>
+#include <inc/lib.h>
 #include "open.h"
 #include "savesync.h"
 #include "writeall.h"

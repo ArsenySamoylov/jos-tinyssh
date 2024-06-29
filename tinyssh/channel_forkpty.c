@@ -5,6 +5,7 @@ Public domain.
 */
 
 #include <inc/unistd.h>
+#include <inc/lib.h>
 #if defined(sun) || defined(__hpux)
 #include <inc/stropts.h>
 #endif
