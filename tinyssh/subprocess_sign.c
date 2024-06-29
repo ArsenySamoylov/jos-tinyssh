@@ -43,11 +43,16 @@ int subprocess_sign(unsigned char *y, long long ylen, const char *keydir, unsign
     unsigned char sm[sshcrypto_sign_MAX + sshcrypto_hash_MAX];
     unsigned long long smlen;
 
+    char old_cwd[MAXPATHLEN];
+    get_cwd(old_cwd, MAXPATHLEN);
+    set_cwd(keydir);
     if (load(sshcrypto_sign_secretkeyfilename, sk, sshcrypto_sign_secretkeybytes) == -1) {
         dprintf("sign: unable to load secret-key from file %s%s%s", keydir, "/", sshcrypto_sign_secretkeyfilename);
         purge(sk, sizeof sk);
         global_die(111);
     }
+    set_cwd(old_cwd);
+
     if (sshcrypto_sign(sm, &smlen, x, sshcrypto_hash_bytes, sk) != 0) { 
         dprintf("sign: unable to sign using secret-key from file %s%s%s", keydir, "/", sshcrypto_sign_secretkeyfilename);
         purge(sk, sizeof sk);

@@ -144,6 +144,9 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
     for (i = 0; sshcrypto_kexs[i].name; ++i) sshcrypto_kexs[i].flagenabled |= sshcrypto_kexs[i].cryptotype & cryptotypeselected;
     for (i = 0; sshcrypto_ciphers[i].name; ++i) sshcrypto_ciphers[i].flagenabled |= sshcrypto_ciphers[i].cryptotype & cryptotypeselected;
 
+    char old_cwd[MAXPATHLEN];
+    get_cwd(old_cwd, MAXPATHLEN);
+    set_cwd(keydir);
     /* read public keys */
     for (i = 0; sshcrypto_keys[i].name; ++i) {
         if (!sshcrypto_keys[i].sign_flagserver) continue;
@@ -153,6 +156,7 @@ int main_tinysshd(int argc, char **argv, const char *binaryname) {
             die_fatal("unable to read public key from file", keydir, sshcrypto_keys[i].sign_publickeyfilename);
         }
     }
+    set_cwd(old_cwd);
 
 
     /* set timeout */
