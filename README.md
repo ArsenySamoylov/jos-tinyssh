@@ -1,3 +1,15 @@
+# Disclaimer
+
+This project is intended for educational purposes only. It is a study project and not intended for production use. 
+
+Please use it responsibly and at your own risk =).
+
+# JOS
+This is fork of tiny-ssh that is lightly patched for [JOS microkernel](https://github.com/jos-ssh/itask) (repository may be private)
+
+
+Ps: This version of tinyssh may (and most likely will) not build on non-linux systems (and even on some linux distro e.g. Arch; check fixed branch for Arch support).
+
 ### Introduction ###
 * tinysshd is a minimalistic SSH server which implements only a subset of SSHv2 features.
 * tinysshd supports only secure cryptography (minimum 128-bit security, protected against cache-timing attacks)
